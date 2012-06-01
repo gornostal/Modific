@@ -1,0 +1,6 @@
+[
+    {
+        "caption": "Modific: Show diff",
+        "command": "show_diff"
+    }
+]

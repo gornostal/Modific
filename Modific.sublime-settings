@@ -1,0 +1,17 @@
+    // Modific default settings
+{
+    // Name of a region icon
+    // Valid icon names are dot, circle, bookmark and cross
+    "region_icon": "dot",
+
+    // You can use your commands instead of plain "git" or "svn"
+    // e.g. "/usr/bin/git" or "C:\bin\git.exe"
+    "cvs_command": {
+        "git": "git",
+        "hg": "hg",
+        "svn": "svn"
+    },
+
+    // if true, plugin prints some debug information to the console window
+    "debug": false
+}

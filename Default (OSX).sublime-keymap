@@ -1,0 +1,5 @@
+[
+    { "keys": ["ctrl+super+c"], "command": "show_original_part" },
+    { "keys": ["ctrl+super+r"], "command": "replace_modified_part" },
+    { "keys": ["ctrl+super+d"], "command": "show_diff" }
+]
