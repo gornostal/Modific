@@ -35,6 +35,7 @@ The "Packages" directory is located at:
         %APPDATA%/Sublime Text 2/Packages/
 
 Please, make sure your VCS binaries is in the PATH (**especially if you are on Windows**).
+
 To do that on Windows, open `Controll Panel -> System -> Advanced system settings -> Environment variables -> System Variables`, find PATH, click "Edit" and append `;C:\path\to\VCS\binaries` for every VCS you will use (or make sure it's already there).
 
 Features / Usage
@@ -50,6 +51,7 @@ Features / Usage
 [![Preview](http://i.imgur.com/siVOXl.jpg)](http://i.imgur.com/siVOX.jpg)
 
 **Revert modification** `Ctrl+Alt+R` on Linux/Windows, `Ctlr+Super+R` on OS X
+
 This command reverts modifications if your cursor stays on modified line (or if on group of lines, then whole group will be reverted)
 
 For those who expected to see a clone of Netbeans feature - unfortunately, with existing ST2 API that is impossible :(
@@ -58,6 +60,7 @@ Configuring
 -----------
 
 Open `Prefrences -> Package Settings -> Modific -> Settings - Default` and look for available settings.
+
 If you want to change something, don't do it in this file. Open `Prefrences -> Package Settings -> Modific -> Settings - User` and put there your configuration.
 
 Basically, all you can configure is a type of icon (dot, circle or bookmark) and path for your CVS binaries.
