@@ -223,7 +223,7 @@ class ShowDiffCommand(DiffCommand, sublime_plugin.TextCommand):
             return
 
         file_name = re.findall(r'([^\\\/]+)$', self.view.file_name())
-        self.scratch(result, title="Diff -" + file_name[0])
+        self.scratch(result, title="Diff - " + file_name[0])
 
 
 class DiffParser(object):
@@ -344,6 +344,10 @@ class HlChangesCommand(DiffCommand, sublime_plugin.TextCommand):
             icon, sublime.HIDDEN | sublime.DRAW_EMPTY)
 
     def diff_done(self, diff):
+        if diff and '@@' not in diff:
+            # probably this is an error message
+            print diff
+
         diff_parser = DiffParser(diff)
         (inserted, changed, deleted) = diff_parser.get_lines_to_hl()
 
