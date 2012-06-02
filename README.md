@@ -63,7 +63,7 @@ Open `Prefrences -> Package Settings -> Modific -> Settings - Default` and look 
 
 If you want to change something, don't do it in this file. Open `Prefrences -> Package Settings -> Modific -> Settings - User` and put there your configuration.
 
-Basically, all you can configure is a type of icon (dot, circle or bookmark) and path for your CVS binaries.
+Basically, all you can configure is a type of icon (dot, circle or bookmark) and path for your VCS binaries.
 
 License
 -------
