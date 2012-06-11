@@ -94,12 +94,12 @@ class CommandThread(threading.Thread):
         except OSError, e:
             if e.errno == 2:
                 main_thread(sublime.error_message,
-                    "'%s' binary could not be found in PATH\n\nConsider using the cvs_command to specify PATH\n\nPATH is: %s" % (self.command[0], os.environ['PATH']))
+                    "'%s' binary could not be found in PATH\n\nConsider using the vcs_command to specify PATH\n\nPATH is: %s" % (self.command[0], os.environ['PATH']))
             else:
                 raise e
 
 
-class CvsCommand(object):
+class VcsCommand(object):
     may_change_files = False
 
     def run_command(self, command, callback=None, show_status=True,
@@ -168,7 +168,7 @@ class CvsCommand(object):
         self.get_window().run_command("show_panel", {"panel": "output.vcs"})
 
 
-class DiffCommand(CvsCommand):
+class DiffCommand(VcsCommand):
     """ Here you can define diff commands for your VCS
         method name pattern: %(vcs_name)s_diff_command
     """
@@ -183,10 +183,6 @@ class DiffCommand(CvsCommand):
         return os.path.dirname(self.view.file_name())
 
     def is_enabled(self):
-        # don't run for this file
-        if self.view.file_name() and 'Modific.py' in self.view.file_name():
-            return False
-
         if self.view.file_name() and len(self.view.file_name()) > 0:
             return get_vcs(self.get_working_dir())
 
@@ -201,9 +197,9 @@ class DiffCommand(CvsCommand):
     def diff_done(self, result):
         pass
 
-    def get_user_command(self, cvs_name):
+    def get_user_command(self, vcs_name):
         try:
-            return settings.get('cvs_command')[cvs_name]
+            return settings.get('vcs_command')[vcs_name]
         except:
             return False
 
