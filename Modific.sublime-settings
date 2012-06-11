@@ -9,9 +9,8 @@
     "vcs": [
         ["git", "git"],
         ["svn", "svn"],
-        ["hg" , "hg"]
+        ["hg" , "hg"]        
     ],
-
     // if true, plugin prints some debug information to the console window
     "debug": false
 }
