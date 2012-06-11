@@ -18,7 +18,7 @@ def get_vcs(directory):
     checkers = [ test(vcs) for vcs,_ in settings.get('vcs') ]
 
     while directory:
-        available = filter(id,[check(directory) for check in checkers ])
+        available = filter(lambda x:x,[check(directory) for check in checkers ])
         if available: return available[0]
         parent = os.path.realpath(os.path.join(directory, os.path.pardir))
         if parent == directory:
