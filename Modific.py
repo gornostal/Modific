@@ -186,10 +186,7 @@ class DiffCommand(VcsCommand):
         pass
 
     def get_user_command(self, vcs_name):
-        try:
-            return dict(settings.get('vcs'))[vcs_name]
-        except:
-            return False
+        return dict(settings.get('vcs')).get(vcs_name,False)
 
     def git_diff_command(self, file_name):
         return [self.get_user_command('git') or 'git', 'diff', '--no-color', '--', file_name]
