@@ -90,7 +90,7 @@ class CommandThread(threading.Thread):
                 raise e
 
 
-class CvsCommand(object):
+class VcsCommand(object):
     may_change_files = False
 
     def run_command(self, command, callback=None, show_status=True,
@@ -159,7 +159,7 @@ class CvsCommand(object):
         self.get_window().run_command("show_panel", {"panel": "output.vcs"})
 
 
-class DiffCommand(CvsCommand):
+class DiffCommand(VcsCommand):
     """ Here you can define diff commands for your VCS
         method name pattern: %(vcs_name)s_diff_command
     """
