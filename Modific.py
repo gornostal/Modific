@@ -179,11 +179,8 @@ class DiffCommand(VcsCommand):
 
     def run(self, edit):
         vcs = get_vcs(self.get_working_dir())
-        try:
-            get_command_fn = getattr(self, '%s_diff_command' % vcs['name'])
-        except AttributeError:
-            return
-        self.run_command(get_command_fn(self.view.file_name()), self.diff_done)
+        get_command = getattr(self, '{0}_diff_command'.format(vcs['name']),None)
+        if get_command: self.run_command(get_command(self.view.file_name()), self.diff_done)
 
     def diff_done(self, result):
         pass
