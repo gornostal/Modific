@@ -14,13 +14,12 @@ settings = sublime.load_settings("Modific.sublime-settings")
 
 
 def get_vcs(directory):
+    test = lambda vcs: lambda dir: os.path.exists(os.path.join(dir,'.'+vcs)) and {'root': dir, 'name': vcs}
+    checkers = [ test(vcs) for vcs,_ in settings.get('vcs') ]
+
     while directory:
-        if os.path.exists(os.path.join(directory, '.git')):
-            return {"root": directory, "name": 'git'}
-        if os.path.exists(os.path.join(directory, '.svn')):
-            return {"root": directory, "name": 'svn'}
-        if os.path.exists(os.path.join(directory, '.hg')):
-            return {"root": directory, "name": 'hg'}
+        available = filter(id,[check(directory) for check in checkers ])
+        if available: return available[0]
         parent = os.path.realpath(os.path.join(directory, os.path.pardir))
         if parent == directory:
             # /.. == /
@@ -41,11 +40,9 @@ def _make_text_safeish(text, fallback_encoding):
     # distinctly non-ideal... and there's no way to tell what's coming out of
     # git in output. So...
     try:
-        unitext = text.decode('utf-8')
+        return text.decode('utf-8')
     except UnicodeDecodeError:
-        unitext = text.decode(fallback_encoding)
-    return unitext
-
+        return text.decode(fallback_encoding)
 
 def do_when(conditional, callback, *args, **kwargs):
     if conditional():
@@ -59,14 +56,8 @@ class CommandThread(threading.Thread):
         self.command = command
         self.on_done = on_done
         self.working_dir = working_dir
-        if "stdin" in kwargs:
-            self.stdin = kwargs["stdin"]
-        else:
-            self.stdin = None
-        if "stdout" in kwargs:
-            self.stdout = kwargs["stdout"]
-        else:
-            self.stdout = subprocess.PIPE
+        self.stdin = kwargs.get('stdin',None)
+        self.stdout = kwargs.get('stdout',subprocess.PIPE)
         self.fallback_encoding = fallback_encoding
         self.kwargs = kwargs
 
@@ -94,7 +85,7 @@ class CommandThread(threading.Thread):
         except OSError, e:
             if e.errno == 2:
                 main_thread(sublime.error_message,
-                    "'%s' binary could not be found in PATH\n\nConsider using the cvs_command to specify PATH\n\nPATH is: %s" % (self.command[0], os.environ['PATH']))
+                    "'%s' binary could not be found in PATH\n\nConsider using the vcs_command to specify PATH\n\nPATH is: %s" % (self.command[0], os.environ['PATH']))
             else:
                 raise e
 
@@ -183,10 +174,6 @@ class DiffCommand(CvsCommand):
         return os.path.dirname(self.view.file_name())
 
     def is_enabled(self):
-        # don't run for this file
-        if self.view.file_name() and 'Modific.py' in self.view.file_name():
-            return False
-
         if self.view.file_name() and len(self.view.file_name()) > 0:
             return get_vcs(self.get_working_dir())
 
@@ -201,9 +188,9 @@ class DiffCommand(CvsCommand):
     def diff_done(self, result):
         pass
 
-    def get_user_command(self, cvs_name):
+    def get_user_command(self, vcs_name):
         try:
-            return settings.get('cvs_command')[cvs_name]
+            return dict(settings.get('vcs'))[vcs_name]
         except:
             return False
 

@@ -61,9 +61,11 @@ Configuring
 
 Open `Prefrences -> Package Settings -> Modific -> Settings - Default` and look for available settings.
 
-If you want to change something, don't do it in this file. Open `Prefrences -> Package Settings -> Modific -> Settings - User` and put there your configuration.
+If you want to change something, don't do it in this file. Open `Preferences -> Package Settings -> Modific -> Settings - User` and put there your configuration.
 
-Basically, all you can configure is a type of icon (dot, circle or bookmark) and path for your VCS binaries.
+You can configure is a type of icon (dot, circle or bookmark) and path for your VCS binaries (or leave them as is, if you have them in your PATH). It's also possible to set priority for VCS used (when you have more than one simultaneously) by reordering their definitions.
+
+
 
 License
 -------

@@ -6,12 +6,12 @@
 
     // You can use your commands instead of plain "git" or "svn"
     // e.g. "/usr/bin/git" or "C:\bin\git.exe"
-    "cvs_command": {
-        "git": "git",
-        "hg": "hg",
-        "svn": "svn"
-    },
-
+    "vcs": [
+        ["git", "git"],
+        ["svn", "svn"],
+        ["hg" , "hg"]        
+    ],
+    
     // if true, plugin prints some debug information to the console window
     "debug": false
 }
