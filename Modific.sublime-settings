@@ -14,7 +14,7 @@
 
     //if you have some weird OS, that has non-unicode console
     //place its console encoding here
-    "console_encoding" : "cp1251",
+    "console_encoding" : "",
 
     // if true, plugin prints some debug information to the console window
     "debug": false
