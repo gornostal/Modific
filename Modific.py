@@ -13,17 +13,16 @@ import re
 
 settings = sublime.load_settings("Modific.sublime-settings")
 
-#helper function to test for vcs existence in given folder
-#uses closure to lock cycle variable value inside lambda
-vcs_check = [ (lambda vcs: lambda dir: os.path.exists(os.path.join(dir,'.'+vcs)) 
-                                      and {'root': dir, 'name': vcs}) (vcs)
-              for vcs,_ in settings.get('vcs') ]
 
 def get_vcs(directory):
     """
     Determines, which of VCS systems we should use for given folder.
     Currently, uses priority of definitions in settings.get('vcs')
     """
+    vcs_check = [ (lambda vcs: lambda dir: os.path.exists(os.path.join(dir,'.'+vcs)) 
+                                      and {'root': dir, 'name': vcs}) (vcs)
+                   for vcs,_ in settings.get('vcs') ]
+
     while directory:
         available = filter(lambda x:x,[check(directory) for check in vcs_check])
         if available: return available[0]
