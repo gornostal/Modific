@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 import sublime
 import sublime_plugin
 import os
@@ -14,11 +15,16 @@ settings = sublime.load_settings("Modific.sublime-settings")
 
 
 def get_vcs(directory):
-    test = lambda vcs: lambda dir: os.path.exists(os.path.join(dir,'.'+vcs)) and {'root': dir, 'name': vcs}
-    checkers = [ test(vcs) for vcs,_ in settings.get('vcs') ]
+    """
+    Determines, which of VCS systems we should use for given folder.
+    Currently, uses priority of definitions in settings.get('vcs')
+    """
+    vcs_check = [ (lambda vcs: lambda dir: os.path.exists(os.path.join(dir,'.'+vcs)) 
+                                      and {'root': dir, 'name': vcs}) (vcs)
+                   for vcs,_ in settings.get('vcs') ]
 
     while directory:
-        available = filter(lambda x:x,[check(directory) for check in checkers ])
+        available = filter(lambda x:x,[check(directory) for check in vcs_check])
         if available: return available[0]
         parent = os.path.realpath(os.path.join(directory, os.path.pardir))
         if parent == directory:
@@ -51,13 +57,14 @@ def do_when(conditional, callback, *args, **kwargs):
 
 
 class CommandThread(threading.Thread):
-    def __init__(self, command, on_done, working_dir="", fallback_encoding="", **kwargs):
+    def __init__(self, command, on_done, working_dir="", fallback_encoding="", console_encoding="", **kwargs):
         threading.Thread.__init__(self)
         self.command = command
         self.on_done = on_done
         self.working_dir = working_dir
         self.stdin = kwargs.get('stdin',None)
         self.stdout = kwargs.get('stdout',subprocess.PIPE)
+        self.console_encoding = console_encoding
         self.fallback_encoding = fallback_encoding
         self.kwargs = kwargs
 
@@ -68,6 +75,9 @@ class CommandThread(threading.Thread):
             shell = os.name == 'nt'
             if self.working_dir != "":
                 os.chdir(self.working_dir)
+
+            if self.console_encoding:
+                self.command = [s.encode(self.console_encoding) for s in self.command]
 
             proc = subprocess.Popen(self.command,
                 stdout=self.stdout, stderr=subprocess.STDOUT,
@@ -101,6 +111,7 @@ class VcsCommand(object):
             kwargs['working_dir'] = self.get_working_dir()
         if 'fallback_encoding' not in kwargs and self.active_view() and self.active_view().settings().get('fallback_encoding'):
             kwargs['fallback_encoding'] = self.active_view().settings().get('fallback_encoding').rpartition('(')[2].rpartition(')')[0]
+        kwargs['console_encoding'] = settings.get('console_encoding')
 
         if self.active_view() and self.active_view().is_dirty() and not no_save:
             self.active_view().run_command('save')
