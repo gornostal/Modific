@@ -19,9 +19,14 @@ def get_vcs(directory):
     Determines, which of VCS systems we should use for given folder.
     Currently, uses priority of definitions in settings.get('vcs')
     """
+    vcs_settings = settings.get('vcs', [
+        ["git", "git"],
+        ["svn", "svn"],
+        ["hg", "hg"]
+    ])
     vcs_check = [ (lambda vcs: lambda dir: os.path.exists(os.path.join(dir,'.'+vcs)) 
                                       and {'root': dir, 'name': vcs}) (vcs)
-                   for vcs,_ in settings.get('vcs') ]
+                   for vcs,_ in vcs_settings ]
 
     while directory:
         available = filter(lambda x:x,[check(directory) for check in vcs_check])
