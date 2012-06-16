@@ -14,19 +14,22 @@ import re
 settings = sublime.load_settings("Modific.sublime-settings")
 
 
+def get_vcs_settings():
+    return settings.get('vcs', [
+        ["git", "git"],
+        ["svn", "svn"],
+        ["hg", "hg"]
+    ])
+
+
 def get_vcs(directory):
     """
     Determines, which of VCS systems we should use for given folder.
     Currently, uses priority of definitions in settings.get('vcs')
     """
-    vcs_settings = settings.get('vcs', [
-        ["git", "git"],
-        ["svn", "svn"],
-        ["hg", "hg"]
-    ])
     vcs_check = [ (lambda vcs: lambda dir: os.path.exists(os.path.join(dir,'.'+vcs)) 
                                       and {'root': dir, 'name': vcs}) (vcs)
-                   for vcs,_ in vcs_settings ]
+                   for vcs,_ in get_vcs_settings() ]
 
     while directory:
         available = filter(lambda x:x,[check(directory) for check in vcs_check])
@@ -202,7 +205,7 @@ class DiffCommand(VcsCommand):
         pass
 
     def get_user_command(self, vcs_name):
-        return dict(settings.get('vcs')).get(vcs_name,False)
+        return dict(get_vcs_settings()).get(vcs_name, False)
 
     def git_diff_command(self, file_name):
         return [self.get_user_command('git') or 'git', 'diff', '--no-color', '--', file_name]
