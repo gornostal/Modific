@@ -67,6 +67,15 @@ You can configure is a type of icon (dot, circle or bookmark) and path for your 
 
 If some sacred punishment has been bestowed upon you, and you have no other choice but to use OS, where console has non-UTF8 encoding, you can set console_encoding parameter to the name of your beloved encoding. This parameter is specifically designed for Windows XP users, who have their git repositories in folders with cyrillic path. Since russian XP uses CP1251 as default encoding (including console), VCS diff commands will be encoded appropriately, when using this parameter.
 
+Known issues
+------------
+
+_Issue #9_: Sometimes disappear icons in the gutter and the tabs row.
+If you experience that, try to restart the editor (sometimes it helps).
+
+If you know exactly how to reproduce those issues, please write a comment [here](https://github.com/gornostal/Modific/issues/9).
+
+My guess is there is a bug in Sublime when plugin use `add_regions` API.
 
 License
 -------
