@@ -54,7 +54,7 @@ Features / Usage
 
 This command reverts modifications if your cursor stays on modified line (or if on group of lines, then whole group will be reverted)
 
-**Jump between changes** `Ctrl+Shift+Page Up(Down)`
+**Go through changed lines** `Ctrl+Shift+Page Up(Down)`
 
 For those who expected to see a clone of Netbeans feature - unfortunately, with existing ST2 API that is impossible :(
 
