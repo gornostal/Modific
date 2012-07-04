@@ -413,3 +413,63 @@ class HlChangesBackground(sublime_plugin.EventListener):
 
     def on_post_save(self, view):
         view.run_command('hl_changes')
+
+
+class JumpBetweenChangesCommand(DiffCommand, sublime_plugin.TextCommand):
+    def run(self, edit, direction='next'):
+        lines = self._get_lines()
+        if not lines:
+            return
+
+        if direction == 'prev':
+            lines.reverse()
+
+        (current_line, col) = self.view.rowcol(self.view.sel()[0].begin())
+        current_line += 1
+        jump_to = None
+        for line in lines:
+            if direction == 'next' and current_line < line:
+                jump_to = line
+                break
+            if direction == 'prev' and current_line > line:
+                jump_to = line
+                break
+
+        if not jump_to:
+            jump_to = lines[0]
+
+        self.goto_line(edit, jump_to)
+
+    def goto_line(self, edit, line):
+        # Convert from 1 based to a 0 based line number
+        line = int(line) - 1
+
+        # Negative line numbers count from the end of the buffer
+        if line < 0:
+            lines, _ = self.view.rowcol(self.view.size())
+            line = lines + line + 1
+
+        pt = self.view.text_point(line, 0)
+
+        self.view.sel().clear()
+        self.view.sel().add(sublime.Region(pt))
+
+        self.view.show(pt)
+
+    def _get_lines(self):
+        diff_parser = DiffParser.instance
+        if not diff_parser:
+            return
+
+        (inserted, changed, deleted) = diff_parser.get_lines_to_hl()
+        lines = list(set(inserted + changed + deleted))
+        lines.sort()
+
+        prev = None
+        ret_lines = []
+        for line in lines:
+            if prev != line - 1:
+                ret_lines.append(line)
+            prev = line
+
+        return ret_lines
