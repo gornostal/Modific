@@ -27,7 +27,7 @@ def get_vcs(directory):
     Determines, which of VCS systems we should use for given folder.
     Currently, uses priority of definitions in settings.get('vcs')
     """
-    vcs_check = [ (lambda vcs: lambda dir: os.path.exists(os.path.join(dir,'.'+vcs)) 
+    vcs_check = [ (lambda vcs: lambda dir: os.path.exists(os.path.join(dir,'.'+vcs))
                                       and {'root': dir, 'name': vcs}) (vcs)
                    for vcs,_ in get_vcs_settings() ]
 
@@ -198,8 +198,10 @@ class DiffCommand(VcsCommand):
 
     def run(self, edit):
         vcs = get_vcs(self.get_working_dir())
-        get_command = getattr(self, '{0}_diff_command'.format(vcs['name']),None)
-        if get_command: self.run_command(get_command(self.view.file_name()), self.diff_done)
+        filename = os.path.basename(self.view.file_name())
+        get_command = getattr(self, '{0}_diff_command'.format(vcs['name']), None)
+        if get_command:
+            self.run_command(get_command(filename), self.diff_done)
 
     def diff_done(self, result):
         pass
