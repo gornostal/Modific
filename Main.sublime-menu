@@ -20,11 +20,6 @@
                                 "args": {"file": "${packages}/Modific/README.md"},
                                 "caption": "README"
                             },
-                            {
-                                "command": "open_file",
-                                "args": {"file": "${packages}/Modific/changelog.txt"},
-                                "caption": "Change Log"
-                            },
                             { "caption": "-" },
                             {
                                 "command": "open_file",
