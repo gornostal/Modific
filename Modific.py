@@ -22,24 +22,35 @@ def get_vcs_settings():
     ])
 
 
+def vcs_root(directory):
+    """
+    Determines root directory for VCS
+    """
+
+    vcs_check = [ (lambda vcs: lambda dir: os.path.exists(os.path.join(dir, '.' + vcs))
+                                      and {'root': dir, 'name': vcs})(vcs)
+                   for vcs, _ in get_vcs_settings() ]
+
+    while directory:
+        available = filter(lambda x: x, [check(directory) for check in vcs_check])
+        if available:
+            return directory, available[0]
+
+        parent = os.path.realpath(os.path.join(directory, os.path.pardir))
+        if parent == directory:
+            # /.. == /
+            return None, None
+        directory = parent
+    return None, None
+
+
 def get_vcs(directory):
     """
     Determines, which of VCS systems we should use for given folder.
     Currently, uses priority of definitions in settings.get('vcs')
     """
-    vcs_check = [ (lambda vcs: lambda dir: os.path.exists(os.path.join(dir,'.'+vcs))
-                                      and {'root': dir, 'name': vcs}) (vcs)
-                   for vcs,_ in get_vcs_settings() ]
-
-    while directory:
-        available = filter(lambda x:x,[check(directory) for check in vcs_check])
-        if available: return available[0]
-        parent = os.path.realpath(os.path.join(directory, os.path.pardir))
-        if parent == directory:
-            # /.. == /
-            return False
-        directory = parent
-    return False
+    root_dir, vcs = vcs_root(directory)
+    return vcs
 
 
 def main_thread(callback, *args, **kwargs):
@@ -177,24 +188,35 @@ class VcsCommand(object):
         self.output_view.set_read_only(True)
         self.get_window().run_command("show_panel", {"panel": "output.vcs"})
 
-
-class DiffCommand(VcsCommand):
-    """ Here you can define diff commands for your VCS
-        method name pattern: %(vcs_name)s_diff_command
-    """
+    def _active_file_name(self):
+        view = self.active_view()
+        if view and view.file_name() and len(view.file_name()) > 0:
+            return view.file_name()
 
     def active_view(self):
         return self.view
 
     def get_window(self):
-        return self.view.window() or sublime.active_window()
+        if (hasattr(self, 'view') and hasattr(self.view, 'window')):
+            return self.view.window()
+        else:
+            return sublime.active_window()
 
     def get_working_dir(self):
-        return os.path.dirname(self.view.file_name())
+        return os.path.dirname(self._active_file_name())
 
     def is_enabled(self):
-        if self.view.file_name() and len(self.view.file_name()) > 0:
+        if self._active_file_name():
             return get_vcs(self.get_working_dir())
+
+    def get_user_command(self, vcs_name):
+        return dict(get_vcs_settings()).get(vcs_name, False)
+
+
+class DiffCommand(VcsCommand):
+    """ Here you can define diff commands for your VCS
+        method name pattern: %(vcs_name)s_diff_command
+    """
 
     def run(self, edit):
         vcs = get_vcs(self.get_working_dir())
@@ -205,9 +227,6 @@ class DiffCommand(VcsCommand):
 
     def diff_done(self, result):
         pass
-
-    def get_user_command(self, vcs_name):
-        return dict(get_vcs_settings()).get(vcs_name, False)
 
     def git_diff_command(self, file_name):
         return [self.get_user_command('git') or 'git', 'diff', '--no-color', '--', file_name]
@@ -473,3 +492,59 @@ class JumpBetweenChangesCommand(DiffCommand, sublime_plugin.TextCommand):
             prev = line
 
         return ret_lines
+
+
+class UncommittedFilesCommand(VcsCommand, sublime_plugin.WindowCommand):
+    def active_view(self):
+        return self.window.active_view()
+
+    def run(self):
+        self.root, self.vcs = vcs_root(self.get_working_dir())
+        status_command = getattr(self, '{0}_status_command'.format(self.vcs['name']), None)
+        if status_command:
+            self.run_command(status_command(), self.status_done)
+
+    def git_status_command(self):
+        return [self.get_user_command('git') or 'git', 'status', '--porcelain']
+
+    def svn_status_command(self):
+        return [self.get_user_command('svn') or 'svn', 'status', '--quiet']
+
+    def hg_status_command(self):
+        return [self.get_user_command('hg') or 'hg', 'status']
+
+    def git_status_file(self, file_name):
+        # first 2 characters are status codes, the third is a space
+        return file_name[3:]
+
+    def svn_status_file(self, file_name):
+        return file_name[8:]
+
+    def hg_status_file(self, file_name):
+        return file_name[2:]
+
+    def status_done(self, result):
+        self.results = filter(lambda x: len(x) > 0 and not x.lstrip().startswith('>'),
+            result.rstrip().split('\n'))
+        if len(self.results):
+            self.show_status_list()
+        else:
+            sublime.status_message("Nothing to show")
+
+    def show_status_list(self):
+        self.get_window().show_quick_panel(self.results, self.panel_done,
+            sublime.MONOSPACE_FONT)
+
+    def panel_done(self, picked):
+        if 0 > picked < len(self.results):
+            return
+        picked_file = self.results[picked]
+        get_file = getattr(self, '{0}_status_file'.format(self.vcs['name']), None)
+        if (get_file):
+            self.open_file(get_file(picked_file))
+
+    def open_file(self, picked_file):
+        if os.path.isfile(os.path.join(self.root, picked_file)):
+            self.window.open_file(os.path.join(self.root, picked_file))
+        else:
+            sublime.status_message("File doesn't exist")

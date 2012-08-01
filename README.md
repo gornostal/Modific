@@ -54,6 +54,9 @@ Features / Usage
 
 This command reverts modifications if your cursor stays on modified line (or if on group of lines, then whole group will be reverted)
 
+**View uncommitted files in a quick panel** `Ctrl+Alt+U` on Linux/Windows, `Ctlr+Super+U` on OS X
+[![Preview](http://i.imgur.com/sldHNl.jpg)](http://i.imgur.com/sldHN.jpg)
+
 **Go through changed lines** `Ctrl+Shift+Page Up(Down)`
 
 For those who expected to see a clone of Netbeans feature - unfortunately, with existing ST2 API that is impossible :(
