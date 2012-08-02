@@ -502,7 +502,7 @@ class UncommittedFilesCommand(VcsCommand, sublime_plugin.WindowCommand):
         self.root, self.vcs = vcs_root(self.get_working_dir())
         status_command = getattr(self, '{0}_status_command'.format(self.vcs['name']), None)
         if status_command:
-            self.run_command(status_command(), self.status_done)
+            self.run_command(status_command(), self.status_done, working_dir=self.root)
 
     def git_status_command(self):
         return [self.get_user_command('git') or 'git', 'status', '--porcelain']
