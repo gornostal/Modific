@@ -423,15 +423,26 @@ class ReplaceModifiedPartCommand(DiffCommand, sublime_plugin.TextCommand):
                 self.view.end_edit(edit)
 
 
+progress = {}
+
+
+def run_hl_changes(view):
+    if(view in progress):
+        return
+    progress[view] = True
+    view.run_command('hl_changes')
+    del progress[view]
+
+
 class HlChangesBackground(sublime_plugin.EventListener):
     def on_load(self, view):
-        view.run_command('hl_changes')
+        threading.Thread(target=run_hl_changes, args=(view,)).start()
 
     def on_activated(self, view):
-        view.run_command('hl_changes')
+        threading.Thread(target=run_hl_changes, args=(view,)).start()
 
     def on_post_save(self, view):
-        view.run_command('hl_changes')
+        threading.Thread(target=run_hl_changes, args=(view,)).start()
 
 
 class JumpBetweenChangesCommand(DiffCommand, sublime_plugin.TextCommand):
