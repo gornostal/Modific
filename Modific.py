@@ -123,7 +123,7 @@ class VcsCommand(object):
     may_change_files = False
 
     def run_command(self, command, callback=None, show_status=True,
-            filter_empty_args=True, no_save=False, **kwargs):
+            filter_empty_args=True, **kwargs):
         if filter_empty_args:
             command = [arg for arg in command if arg]
         if 'working_dir' not in kwargs:
@@ -132,7 +132,8 @@ class VcsCommand(object):
             kwargs['fallback_encoding'] = self.active_view().settings().get('fallback_encoding').rpartition('(')[2].rpartition(')')[0]
         kwargs['console_encoding'] = settings.get('console_encoding')
 
-        if self.active_view() and self.active_view().is_dirty() and not no_save:
+        autosave = settings.get('autosave', True)
+        if self.active_view() and self.active_view().is_dirty() and autosave:
             self.active_view().run_command('save')
         if not callback:
             callback = self.generic_done
