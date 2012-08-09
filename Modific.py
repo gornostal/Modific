@@ -233,7 +233,7 @@ class DiffCommand(VcsCommand):
         return [self.get_user_command('git') or 'git', 'diff', '--no-color', '--', file_name]
 
     def svn_diff_command(self, file_name):
-        return [self.get_user_command('svn') or 'svn', 'diff', file_name]
+        return [self.get_user_command('svn') or 'svn', 'diff', '--internal-diff', file_name]
 
     def hg_diff_command(self, file_name):
         return [self.get_user_command('hg') or 'hg', 'diff', file_name]
