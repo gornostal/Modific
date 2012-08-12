@@ -18,6 +18,7 @@ def get_vcs_settings():
     return settings.get('vcs', [
         ["git", "git"],
         ["svn", "svn"],
+        ["bzr", "bzr"],
         ["hg", "hg"]
     ])
 
@@ -234,6 +235,9 @@ class DiffCommand(VcsCommand):
 
     def svn_diff_command(self, file_name):
         return [self.get_user_command('svn') or 'svn', 'diff', '--internal-diff', file_name]
+
+    def bzr_diff_command(self, file_name):
+        return [self.get_user_command('bzr') or 'bzr', 'diff', file_name]
 
     def hg_diff_command(self, file_name):
         return [self.get_user_command('hg') or 'hg', 'diff', file_name]
@@ -511,6 +515,9 @@ class UncommittedFilesCommand(VcsCommand, sublime_plugin.WindowCommand):
     def svn_status_command(self):
         return [self.get_user_command('svn') or 'svn', 'status', '--quiet']
 
+    def bzr_status_command(self):
+        return [self.get_user_command('bzr') or 'bzr', 'status', '-S', '--no-pending', '-V']
+
     def hg_status_command(self):
         return [self.get_user_command('hg') or 'hg', 'status']
 
@@ -520,6 +527,9 @@ class UncommittedFilesCommand(VcsCommand, sublime_plugin.WindowCommand):
 
     def svn_status_file(self, file_name):
         return file_name[8:]
+
+    def bzr_status_file(self, file_name):
+        return file_name[4:]
 
     def hg_status_file(self, file_name):
         return file_name[2:]
