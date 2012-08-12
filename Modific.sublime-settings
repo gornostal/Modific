@@ -9,6 +9,7 @@
     "vcs": [
         ["git", "git"],
         ["svn", "svn"],
+        ["bzr", "bzr"],
         ["hg" , "hg"]
     ],
 
