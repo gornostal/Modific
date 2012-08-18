@@ -234,7 +234,12 @@ class DiffCommand(VcsCommand):
         return [self.get_user_command('git') or 'git', 'diff', '--no-color', '--', file_name]
 
     def svn_diff_command(self, file_name):
-        return [self.get_user_command('svn') or 'svn', 'diff', '--internal-diff', file_name]
+        params = [self.get_user_command('svn') or 'svn', 'diff', '--internal-diff']
+        if file_name.startswith('@'):
+            file_name += '@'
+            params.extend(['--revision', 'HEAD'])
+        params.extend([file_name])
+        return params
 
     def bzr_diff_command(self, file_name):
         return [self.get_user_command('bzr') or 'bzr', 'diff', file_name]
