@@ -235,7 +235,7 @@ class DiffCommand(VcsCommand):
 
     def svn_diff_command(self, file_name):
         params = [self.get_user_command('svn') or 'svn', 'diff', '--internal-diff']
-        if file_name.startswith('@'):
+        if file_name.find('@') != -1:
             file_name += '@'
             params.extend(['--revision', 'HEAD'])
         params.extend([file_name])
