@@ -76,7 +76,7 @@ Known issues
 ------------
 
 _Issue #9_: Sometimes disappear icons in the gutter and the tabs row.
-If you experience that, try to restart the editor (sometimes it helps).
+If you experience that, try to restart the editor (sometimes it helps). Or try to disable `autosave` setting.
 
 If you know exactly how to reproduce those issues, please write a comment [here](https://github.com/gornostal/Modific/issues/9).
 
