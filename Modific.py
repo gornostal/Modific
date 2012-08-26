@@ -234,7 +234,9 @@ class DiffCommand(VcsCommand):
         return [self.get_user_command('git') or 'git', 'diff', '--no-color', '--', file_name]
 
     def svn_diff_command(self, file_name):
-        params = [self.get_user_command('svn') or 'svn', 'diff', '--internal-diff']
+        params = [self.get_user_command('svn') or 'svn', 'diff']
+        if settings.get('svn_use_internal_diff', True):
+            params.append('--internal-diff')
         if file_name.find('@') != -1:
             file_name += '@'
             params.extend(['--revision', 'HEAD'])

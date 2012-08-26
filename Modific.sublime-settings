@@ -21,5 +21,7 @@
     "debug": false,
 
     // set to false to disable automatic saving
-    "autosave": true
+    "autosave": true,
+
+    "svn_use_internal_diff": true
 }
