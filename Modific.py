@@ -208,7 +208,8 @@ class VcsCommand(object):
         return os.path.dirname(self._active_file_name())
 
     def is_enabled(self):
-        if self._active_file_name():
+        file_name = self._active_file_name()
+        if file_name and os.path.exists(file_name):
             return get_vcs(self.get_working_dir())
 
     def get_user_command(self, vcs_name):
