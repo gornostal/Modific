@@ -74,6 +74,8 @@ You can configure is a type of icon (dot, circle or bookmark) and path for your 
 
 If some sacred punishment has been bestowed upon you, and you have no other choice but to use OS, where console has non-UTF8 encoding, you can set console_encoding parameter to the name of your beloved encoding. This parameter is specifically designed for Windows XP users, who have their git repositories in folders with cyrillic path. Since russian XP uses CP1251 as default encoding (including console), VCS diff commands will be encoded appropriately, when using this parameter.
 
+If you use different than the default theme, you can customize colors of bullets on the gutter by adding [this](https://gist.github.com/3692073) chunk of code to your theme.
+
 Known issues
 ------------
 
