@@ -44,7 +44,7 @@ Features / Usage
 **Highlight changes** *(automatically: on save or when window gets focus)*
 [![Highlight changes](http://i.imgur.com/FgpyRl.jpg)](http://i.imgur.com/FgpyR.jpg)
 
-**Show diff** `Ctrl+Alt+D` on Linux/Windows, `Ctlr+Super+D` on OS X
+**Show diff** `Ctrl+Alt+D` on Linux/Windows and OS X
 [![Show diff](http://i.imgur.com/csCw7l.jpg)](http://i.imgur.com/csCw7.jpg)
 
 **Preview of the commited code for current line** `Ctrl+Alt+C` on Linux/Windows, `Ctlr+Super+C` on OS X

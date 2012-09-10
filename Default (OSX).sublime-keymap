@@ -1,7 +1,7 @@
 [
     { "keys": ["ctrl+super+c"], "command": "show_original_part" },
     { "keys": ["ctrl+super+r"], "command": "replace_modified_part" },
-    { "keys": ["ctrl+super+d"], "command": "show_diff" },
+    { "keys": ["ctrl+alt+d"], "command": "show_diff" },
     { "keys": ["ctrl+super+u"], "command": "uncommitted_files" },
 
     { "keys": ["ctrl+shift+pageup"], "command": "jump_between_changes", "args": {"direction": "prev"} },
