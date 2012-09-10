@@ -61,6 +61,8 @@ This command reverts modifications if your cursor stays on modified line (or if 
 
 For those who expected to see a clone of Netbeans feature - unfortunately, with existing ST2 API that is impossible :(
 
+[Discussion on the forum](http://www.sublimetext.com/forum/viewtopic.php?f=5&t=7468)
+
 Configuring
 -----------
 
