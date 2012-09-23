@@ -80,11 +80,13 @@ Known issues
 ------------
 
 _Issue #9_: Sometimes disappear icons in the gutter and the tabs row.
-If you experience that, try to restart the editor (sometimes it helps). Or try to disable `autosave` setting.
+If you experience that, try to restart the editor (sometimes it helps).
 
 If you know exactly how to reproduce those issues, please write a comment [here](https://github.com/gornostal/Modific/issues/9).
 
 My guess is there is a bug in Sublime when plugin use `add_regions` API.
+
+And please, vote for this issue on the [Sublime's bug tracker](http://sublimetext.userecho.com/topic/128369-invisible-tabs-row-icons-on-the-gutter/).
 
 License
 -------
