@@ -23,5 +23,8 @@
     // set to false to disable automatic saving
     "autosave": true,
 
-    "svn_use_internal_diff": true
+    "svn_use_internal_diff": true,
+
+    // File size limit (in KB) for drawing icons on the gutter
+    "max_file_size": 1024
 }
