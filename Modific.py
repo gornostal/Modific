@@ -226,7 +226,7 @@ class DiffCommand(VcsCommand):
         filepath = self.view.file_name()
         filename = os.path.basename(filepath)
         max_file_size = settings.get('max_file_size', 1024) * 1024
-        if not os.path.exists(filename) or os.path.getsize(filename) > max_file_size:
+        if not os.path.exists(filepath) or os.path.getsize(filepath) > max_file_size:
             # skip large files
             return
         get_command = getattr(self, '{0}_diff_command'.format(vcs['name']), None)
