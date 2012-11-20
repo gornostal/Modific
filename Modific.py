@@ -115,7 +115,7 @@ class CommandThread(threading.Thread):
         except OSError, e:
             if e.errno == 2:
                 main_thread(sublime.error_message,
-                    "'%s' binary could not be found in PATH\n\nConsider using the vcs_command to specify PATH\n\nPATH is: %s" % (self.command[0], os.environ['PATH']))
+                    "'%s' binary could not be found in PATH\n\nConsider using `vcs` property to specify PATH\n\nPATH is: %s" % (self.command[0], os.environ['PATH']))
             else:
                 raise e
 
