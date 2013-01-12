@@ -290,7 +290,7 @@ class DiffParser(object):
                 lines = []
                 for line in diff.splitlines():
                     # ignore lines with '\' at the beginning
-                    if line[0] == '\\':
+                    if line.startswith('\\'):
                         continue
 
                     matches = re.findall(re_header, line)
