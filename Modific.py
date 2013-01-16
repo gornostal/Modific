@@ -315,11 +315,11 @@ class DiffParser(object):
             current = chunk['start']
             deleted_line = None
             for line in chunk['lines']:
-                if line[0] == '-':
+                if line.startswith('-'):
                     if (not deleted_line or deleted_line not in deleted):
                         deleted.append(current)
                     deleted_line = current
-                elif line[0] == '+':
+                elif line.startswith('+'):
                     if deleted_line:
                         deleted.pop()
                         deleted_line = None
@@ -350,11 +350,11 @@ class DiffParser(object):
                 replace_lines = 0
                 return_this_lines = False
                 for line in chunk['lines']:
-                    if line[0] == '-' or line[0] == '+':
+                    if line.startswith('-') or line.startswith('+'):
                         first = first or current
                         if current == line_num:
                             return_this_lines = True
-                        if line[0] == '-':
+                        if line.startswith('-'):
                             ret_lines.append(line[1:])
                         else:
                             replace_lines += 1
