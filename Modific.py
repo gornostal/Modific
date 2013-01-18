@@ -342,27 +342,35 @@ class DiffParser(object):
             return (lines list, start_line int, replace_lines int)
         """
 
+        # for each chunk from diff:
         for chunk in self.get_chunks():
+            # if line_num is within that chunk
             if chunk['start'] <= line_num <= chunk['end']:
                 ret_lines = []
-                current = chunk['start']
-                first = None
-                replace_lines = 0
-                return_this_lines = False
+                current = chunk['start']  # line number that corresponds to current version of file
+                first = None  # number of the first line to change
+                replace_lines = 0  # number of lines to change
+                return_this_lines = False  # flag shows whether we can return accumulated lines
                 for line in chunk['lines']:
                     if line.startswith('-') or line.startswith('+'):
                         first = first or current
                         if current == line_num:
                             return_this_lines = True
                         if line.startswith('-'):
+                            # if line starts with '-' we have previous version
                             ret_lines.append(line[1:])
                         else:
+                            # if line starts with '+' we only increment numbers
                             replace_lines += 1
                             current += 1
                     elif return_this_lines:
                         break
                     else:
+                        # gap between modifications
+                        # reset our variables
                         current += 1
+                        first = current
+                        replace_lines = 0
                         ret_lines = []
                 if return_this_lines:
                     return ret_lines, first, replace_lines
