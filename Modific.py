@@ -376,7 +376,9 @@ class HlChangesCommand(DiffCommand, sublime_plugin.TextCommand):
             self.view.erase_regions(hl_key)
             return
 
-        icon = settings.get('region_icon') or 'dot'
+        icon = settings.get('region_icon') or 'modific'
+        if icon == 'modific':
+            icon = '../Modific/icons/' + hl_key
         points = [self.view.text_point(l - 1, 0) for l in lines]
         regions = [sublime.Region(p, p) for p in points]
         self.view.add_regions(hl_key, regions, "markup.%s.diff" % hl_key,
