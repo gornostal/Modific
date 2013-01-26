@@ -395,7 +395,11 @@ class HlChangesCommand(DiffCommand, sublime_plugin.TextCommand):
     def diff_done(self, diff):
         if diff and '@@' not in diff:
             # probably this is an error message
-            print diff
+            # if print raise UnicodeEncodeError, try to encode string to utf-8 (issue #35)
+            try:
+                print diff
+            except UnicodeEncodeError:
+                print diff.encode('utf-8')
 
         diff_parser = DiffParser(diff)
         (inserted, changed, deleted) = diff_parser.get_lines_to_hl()
