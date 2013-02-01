@@ -2,6 +2,9 @@
 {
     // Name of a region icon
     // Valid icon names are: modific, dot, circle, bookmark and cross
+    // WARNING: if you set value different than 'modific',
+    //          you may experience issues with UI of Sublime.
+    //          See https://github.com/gornostal/Modific/issues/9
     "region_icon": "modific",
 
     // You can use your commands instead of plain "git" or "svn"
