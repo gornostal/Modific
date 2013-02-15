@@ -7,15 +7,16 @@ import subprocess
 import functools
 import re
 
-# Just want to mention, at least half of the code
-# was copy-pasted from the Git plugin https://github.com/kemayo/sublime-text-2-git
-# open source is cool :)
 
-settings = sublime.load_settings("Modific.sublime-settings")
+FULL_PLUGIN_DIRECTORY = os.path.dirname(os.path.realpath(__file__))
+PLUGIN_DIRECTORY = FULL_PLUGIN_DIRECTORY.replace(os.path.normpath(os.path.join(FULL_PLUGIN_DIRECTORY, '..', '..')) + os.path.sep, '').replace(os.path.sep, '/')
+
+def get_settings():
+    return sublime.load_settings("Modific.sublime-settings")
 
 
 def get_vcs_settings():
-    return settings.get('vcs', [
+    return get_settings().get('vcs', [
         ["git", "git"],
         ["svn", "svn"],
         ["bzr", "bzr"],
@@ -28,12 +29,12 @@ def vcs_root(directory):
     Determines root directory for VCS
     """
 
-    vcs_check = [ (lambda vcs: lambda dir: os.path.exists(os.path.join(dir, '.' + vcs))
+    vcs_check = [(lambda vcs: lambda dir: os.path.exists(os.path.join(dir, '.' + vcs))
                                       and {'root': dir, 'name': vcs})(vcs)
-                   for vcs, _ in get_vcs_settings() ]
+                   for vcs, _ in get_vcs_settings()]
 
     while directory:
-        available = filter(lambda x: x, [check(directory) for check in vcs_check])
+        available = list(filter(lambda x: x, [check(directory) for check in vcs_check]))
         if available:
             return directory, available[0]
 
@@ -48,7 +49,7 @@ def vcs_root(directory):
 def get_vcs(directory):
     """
     Determines, which of VCS systems we should use for given folder.
-    Currently, uses priority of definitions in settings.get('vcs')
+    Currently, uses priority of definitions in get_vcs_settings()
     """
     root_dir, vcs = vcs_root(directory)
     return vcs
@@ -60,15 +61,21 @@ def main_thread(callback, *args, **kwargs):
     sublime.set_timeout(functools.partial(callback, *args, **kwargs), 0)
 
 
-def _make_text_safeish(text, fallback_encoding):
+def _make_text_safeish(text, fallback_encoding, method='decode'):
     # The unicode decode here is because sublime converts to unicode inside
     # insert in such a way that unknown characters will cause errors, which is
     # distinctly non-ideal... and there's no way to tell what's coming out of
     # git in output. So...
     try:
-        return text.decode('utf-8')
-    except UnicodeDecodeError:
-        return text.decode(fallback_encoding)
+        unitext = getattr(text, method)('utf-8')
+    except (UnicodeEncodeError, UnicodeDecodeError):
+        unitext = getattr(text, method)(fallback_encoding)
+    except AttributeError:
+        # strongly implies we're already unicode, but just in case let's cast
+        # to string
+        unitext = str(text)
+    return unitext
+
 
 def do_when(conditional, callback, *args, **kwargs):
     if conditional():
@@ -82,8 +89,11 @@ class CommandThread(threading.Thread):
         self.command = command
         self.on_done = on_done
         self.working_dir = working_dir
-        self.stdin = kwargs.get('stdin',None)
-        self.stdout = kwargs.get('stdout',subprocess.PIPE)
+        if 'stdin' in kwargs:
+            self.stdin = kwargs['stdin'].encode()
+        else:
+            self.stdin = None
+        self.stdout = kwargs.get('stdout', subprocess.PIPE)
         self.console_encoding = console_encoding
         self.fallback_encoding = fallback_encoding
         self.kwargs = kwargs
@@ -110,9 +120,9 @@ class CommandThread(threading.Thread):
             # output = subprocess.check_output(self.command)
             main_thread(self.on_done,
                 _make_text_safeish(output, self.fallback_encoding), **self.kwargs)
-        except subprocess.CalledProcessError, e:
+        except subprocess.CalledProcessError as e:
             main_thread(self.on_done, e.returncode)
-        except OSError, e:
+        except OSError as e:
             if e.errno == 2:
                 main_thread(sublime.error_message,
                     "'%s' binary could not be found in PATH\n\nConsider using `vcs` property to specify PATH\n\nPATH is: %s" % (self.command[0], os.environ['PATH']))
@@ -120,8 +130,23 @@ class CommandThread(threading.Thread):
                 raise e
 
 
+class EditViewCommand(sublime_plugin.TextCommand):
+
+    def run(self, edit, command='replace', output='', region=None, begin=0):
+        if command == 'insert':
+            self.view.insert(edit, begin, output)
+        elif command == 'replace':
+            self.view.replace(edit, region, output)
+        else:
+            self.view.erase(edit, region)
+
+
 class VcsCommand(object):
     may_change_files = False
+
+    def __init__(self, view=None):
+        self.settings = get_settings()
+        super().__init__(view)
 
     def run_command(self, command, callback=None, show_status=True,
             filter_empty_args=True, **kwargs):
@@ -131,9 +156,9 @@ class VcsCommand(object):
             kwargs['working_dir'] = self.get_working_dir()
         if 'fallback_encoding' not in kwargs and self.active_view() and self.active_view().settings().get('fallback_encoding'):
             kwargs['fallback_encoding'] = self.active_view().settings().get('fallback_encoding').rpartition('(')[2].rpartition(')')[0]
-        kwargs['console_encoding'] = settings.get('console_encoding')
+        kwargs['console_encoding'] = self.settings.get('console_encoding')
 
-        autosave = settings.get('autosave', True)
+        autosave = self.settings.get('autosave', True)
         if self.active_view() and self.active_view().is_dirty() and autosave:
             self.active_view().run_command('save')
         if not callback:
@@ -152,7 +177,7 @@ class VcsCommand(object):
                 result = "WARNING: Current view is dirty.\n\n"
             else:
                 # just asking the current file to be re-opened doesn't do anything
-                print "reverting"
+                print("reverting")
                 position = self.active_view().viewport_position()
                 self.active_view().run_command('revert')
                 do_when(lambda: not self.active_view().is_loading(), lambda: self.active_view().set_viewport_position(position, False))
@@ -164,12 +189,11 @@ class VcsCommand(object):
     def _output_to_view(self, output_file, output, clear=False,
             syntax="Packages/Diff/Diff.tmLanguage"):
         output_file.set_syntax_file(syntax)
-        edit = output_file.begin_edit()
         if clear:
             region = sublime.Region(0, self.output_view.size())
-            output_file.erase(edit, region)
-        output_file.insert(edit, 0, output)
-        output_file.end_edit(edit)
+            output_file.run_command('edit_view', {'command': 'replace', 'region': region, 'output': output})
+        else:
+            output_file.run_command('edit_view', {'command': 'insert', 'output': output})
 
     def scratch(self, output, title=False, position=None, **kwargs):
         scratch_file = self.get_window().new_file()
@@ -210,7 +234,8 @@ class VcsCommand(object):
     def is_enabled(self):
         file_name = self._active_file_name()
         if file_name and os.path.exists(file_name):
-            return get_vcs(self.get_working_dir())
+            return bool(get_vcs(self.get_working_dir()))
+        return False
 
     def get_user_command(self, vcs_name):
         return dict(get_vcs_settings()).get(vcs_name, False)
@@ -225,7 +250,7 @@ class DiffCommand(VcsCommand):
         vcs = get_vcs(self.get_working_dir())
         filepath = self.view.file_name()
         filename = os.path.basename(filepath)
-        max_file_size = settings.get('max_file_size', 1024) * 1024
+        max_file_size = self.settings.get('max_file_size', 1024) * 1024
         if not os.path.exists(filepath) or os.path.getsize(filepath) > max_file_size:
             # skip large files
             return
@@ -241,7 +266,7 @@ class DiffCommand(VcsCommand):
 
     def svn_diff_command(self, file_name):
         params = [self.get_user_command('svn') or 'svn', 'diff']
-        if settings.get('svn_use_internal_diff', True):
+        if self.settings.get('svn_use_internal_diff', True):
             params.append('--internal-diff')
         if file_name.find('@') != -1:
             file_name += '@'
@@ -384,7 +409,7 @@ class HlChangesCommand(DiffCommand, sublime_plugin.TextCommand):
             self.view.erase_regions(hl_key)
             return
 
-        icon = settings.get('region_icon') or 'modific'
+        icon = self.settings.get('region_icon') or 'modific'
         if icon == 'modific':
             icon = '../Modific/icons/' + hl_key
         points = [self.view.text_point(l - 1, 0) for l in lines]
@@ -397,15 +422,15 @@ class HlChangesCommand(DiffCommand, sublime_plugin.TextCommand):
             # probably this is an error message
             # if print raise UnicodeEncodeError, try to encode string to utf-8 (issue #35)
             try:
-                print diff
+                print(diff)
             except UnicodeEncodeError:
-                print diff.encode('utf-8')
+                print(diff.encode('utf-8'))
 
         diff_parser = DiffParser(diff)
         (inserted, changed, deleted) = diff_parser.get_lines_to_hl()
 
-        if settings.get('debug'):
-            print inserted, changed, deleted
+        if self.settings.get('debug'):
+            print(inserted, changed, deleted)
         self.hl_lines(inserted, 'inserted')
         self.hl_lines(deleted, 'deleted')
         self.hl_lines(changed, 'changed')
@@ -433,26 +458,22 @@ class ReplaceModifiedPartCommand(DiffCommand, sublime_plugin.TextCommand):
 
         (row, col) = self.view.rowcol(self.view.sel()[0].begin())
         (lines, current, replace_lines) = diff_parser.get_original_part(row + 1)
-        if settings.get('debug'):
-            print 'replace', (lines, current, replace_lines)
+        if self.settings.get('debug'):
+            print('replace', (lines, current, replace_lines))
         if lines is not None:
-            edit = self.view.begin_edit()
-            try:
-                begin = self.view.text_point(current - 1, 0)
-                content = os.linesep.join(lines)
-                if replace_lines:
-                    end = self.view.line(self.view.text_point(replace_lines + current - 2, 0)).end()
-                    region = sublime.Region(begin, end)
-                    if lines:
-                        self.view.replace(edit, region, content)
-                    else:
-                        region = self.view.full_line(region)
-                        self.view.erase(edit, region)
+            begin = self.view.text_point(current - 1, 0)
+            content = os.linesep.join(lines)
+            if replace_lines:
+                end = self.view.line(self.view.text_point(replace_lines + current - 2, 0)).end()
+                region = sublime.Region(begin, end)
+                if lines:
+                    self.view.run_command('edit_view', {'command': 'replace', 'region': region, 'output': content})
                 else:
-                    self.view.insert(edit, begin, content + os.linesep)
-                self.view.run_command('save')
-            finally:
-                self.view.end_edit(edit)
+                    region = self.view.full_line(region)
+                    self.view.run_command('edit_view', {'command': 'erase', 'region': region})
+            else:
+                self.view.run_command('edit_view', {'command': 'insert', 'begin': begin, 'output': content + os.linesep})
+            self.view.run_command('save')
 
 
 class HlChangesBackground(sublime_plugin.EventListener):
