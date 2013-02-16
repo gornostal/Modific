@@ -76,6 +76,11 @@ If some sacred punishment has been bestowed upon you, and you have no other choi
 
 If you use different than the default theme, you can customize colors of bullets on the gutter by adding [this](https://gist.github.com/3692073) chunk of code to your theme.
 
+Thanks to
+---------
+
+@beefsack for purchasing a license
+
 License
 -------
 Released under the [WTFPLv2](http://sam.zoy.org/wtfpl/COPYING).
