@@ -8,10 +8,6 @@ import functools
 import re
 
 
-FULL_PLUGIN_DIRECTORY = os.path.dirname(os.path.realpath(__file__))
-PLUGIN_DIRECTORY = FULL_PLUGIN_DIRECTORY.replace(os.path.normpath(os.path.join(FULL_PLUGIN_DIRECTORY, '..', '..')) + os.path.sep, '').replace(os.path.sep, '/')
-
-
 def get_settings():
     return sublime.load_settings("Modific.sublime-settings")
 
