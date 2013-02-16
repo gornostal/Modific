@@ -11,6 +11,7 @@ import re
 FULL_PLUGIN_DIRECTORY = os.path.dirname(os.path.realpath(__file__))
 PLUGIN_DIRECTORY = FULL_PLUGIN_DIRECTORY.replace(os.path.normpath(os.path.join(FULL_PLUGIN_DIRECTORY, '..', '..')) + os.path.sep, '').replace(os.path.sep, '/')
 
+
 def get_settings():
     return sublime.load_settings("Modific.sublime-settings")
 
@@ -132,21 +133,29 @@ class CommandThread(threading.Thread):
 
 class EditViewCommand(sublime_plugin.TextCommand):
 
-    def run(self, edit, command='replace', output='', region=None, begin=0):
+    def run(self, edit, command=None, output='', begin=0, region=None):
+        """
+        For some reason Sublime's view.run_command() doesn't allow to pass tuples,
+        therefore region must be a list
+        """
+        region = sublime.Region(int(region[0]), int(region[1])) if region else None
         if command == 'insert':
-            self.view.insert(edit, begin, output)
+            self.view.insert(edit, int(begin), output)
         elif command == 'replace':
             self.view.replace(edit, region, output)
-        else:
+        elif command == 'erase':
             self.view.erase(edit, region)
+        else:
+            print('Invalid command: ', command)
+            raise
 
 
 class VcsCommand(object):
     may_change_files = False
 
-    def __init__(self, view=None):
+    def __init__(self, *args, **kwargs):
         self.settings = get_settings()
-        super().__init__(view)
+        super(VcsCommand, self).__init__(*args, **kwargs)
 
     def run_command(self, command, callback=None, show_status=True,
             filter_empty_args=True, **kwargs):
@@ -190,10 +199,9 @@ class VcsCommand(object):
             syntax="Packages/Diff/Diff.tmLanguage"):
         output_file.set_syntax_file(syntax)
         if clear:
-            region = sublime.Region(0, self.output_view.size())
-            output_file.run_command('edit_view', {'command': 'replace', 'region': region, 'output': output})
+            output_file.run_command('edit_view', dict(command='replace', region=[0, self.output_view.size()], output=output))
         else:
-            output_file.run_command('edit_view', {'command': 'insert', 'output': output})
+            output_file.run_command('edit_view', dict(command='insert', output=output))
 
     def scratch(self, output, title=False, position=None, **kwargs):
         scratch_file = self.get_window().new_file()
@@ -467,12 +475,12 @@ class ReplaceModifiedPartCommand(DiffCommand, sublime_plugin.TextCommand):
                 end = self.view.line(self.view.text_point(replace_lines + current - 2, 0)).end()
                 region = sublime.Region(begin, end)
                 if lines:
-                    self.view.run_command('edit_view', {'command': 'replace', 'region': region, 'output': content})
+                    self.view.run_command('edit_view', dict(command='replace', region=[region.begin(), region.end()], output=content))
                 else:
                     region = self.view.full_line(region)
-                    self.view.run_command('edit_view', {'command': 'erase', 'region': region})
+                    self.view.run_command('edit_view', dict(command='erase', region=[region.begin(), region.end()]))
             else:
-                self.view.run_command('edit_view', {'command': 'insert', 'begin': begin, 'output': content + os.linesep})
+                self.view.run_command('edit_view', dict(command='insert', begin=begin, output=content + os.linesep))
             self.view.run_command('save')
 
 

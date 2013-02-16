@@ -1,7 +1,7 @@
 Modific
 =========
 
-Modific is a ST3 plugin for highlighting lines changed from the last commit (you know what I mean if you used Netbeans).
+Modific is a ST2(3) plugin for highlighting lines changed since the last commit (you know what I mean if you used Netbeans).
 
 For now it supports **Git**, **SVN**, **Bazaar** and **Mercurial**.
 
@@ -24,15 +24,15 @@ The "Packages" directory is located at:
 
 * OS X:
 
-        ~/Library/Application Support/Sublime Text 3/Packages/
+        ~/Library/Application Support/Sublime Text 2/Packages/
 
 * Linux:
 
-        ~/.config/sublime-text-3/Packages/
+        ~/.config/sublime-text-2/Packages/
 
 * Windows:
 
-        %APPDATA%/Sublime Text 3/Packages/
+        %APPDATA%/Sublime Text 2/Packages/
 
 Please, make sure your VCS binaries is in the PATH (**especially if you are on Windows**).
 
@@ -59,7 +59,7 @@ This command reverts modifications if your cursor stays on modified line (or if 
 
 **Go through changed lines** `Ctrl+Shift+Page Up(Down)`
 
-For those who expected to see a clone of Netbeans feature - unfortunately, with existing ST3 API that is impossible :(
+For those who expected to see a clone of Netbeans feature - unfortunately, with existing Sublime Text API that is impossible :(
 
 [Discussion on the forum](http://www.sublimetext.com/forum/viewtopic.php?f=5&t=7468)
 
