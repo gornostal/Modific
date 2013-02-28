@@ -8,6 +8,8 @@ import functools
 import re
 
 
+IS_ST3 = sublime.version().startswith('3')
+
 def get_settings():
     return sublime.load_settings("Modific.sublime-settings")
 
@@ -415,7 +417,10 @@ class HlChangesCommand(DiffCommand, sublime_plugin.TextCommand):
 
         icon = self.settings.get('region_icon') or 'modific'
         if icon == 'modific':
-            icon = '../Modific/icons/' + hl_key
+            if IS_ST3:
+                icon = 'Packages/Modific/icons/' + hl_key + '.png'
+            else:
+                icon = '../Modific/icons/' + hl_key
         points = [self.view.text_point(l - 1, 0) for l in lines]
         regions = [sublime.Region(p, p) for p in points]
         self.view.add_regions(hl_key, regions, "markup.%s.diff" % hl_key,
