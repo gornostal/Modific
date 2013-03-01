@@ -592,8 +592,8 @@ class UncommittedFilesCommand(VcsCommand, sublime_plugin.WindowCommand):
         return file_name[2:]
 
     def status_done(self, result):
-        self.results = filter(lambda x: len(x) > 0 and not x.lstrip().startswith('>'),
-            result.rstrip().split('\n'))
+        self.results = list(filter(lambda x: len(x) > 0 and not x.lstrip().startswith('>'),
+            result.rstrip().split('\n')))
         if len(self.results):
             self.show_status_list()
         else:
