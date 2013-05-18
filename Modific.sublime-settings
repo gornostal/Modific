@@ -16,6 +16,11 @@
         ["hg" , "hg"]
     ],
 
+    // default list of options for a diff command for a certain VCS
+    "vcs_options": {
+        "git": ["--no-color", "--no-ext-diff"]
+    },
+
     //if you have some weird OS, that has non-unicode console
     //place its console encoding here
     "console_encoding" : "",

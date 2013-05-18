@@ -268,23 +268,32 @@ class DiffCommand(VcsCommand):
         pass
 
     def git_diff_command(self, file_name):
-        return [self.get_user_command('git') or 'git', 'diff', '--no-color', '--no-ext-diff', '--', file_name]
+        vcs_options = self.settings.get('vcs_options', {}).get('git') or ['--no-color', '--no-ext-diff']
+        return [self.get_user_command('git') or 'git', 'diff'] + vcs_options + ['--', file_name]
 
     def svn_diff_command(self, file_name):
         params = [self.get_user_command('svn') or 'svn', 'diff']
-        if self.settings.get('svn_use_internal_diff', True):
+        params.extend(self.settings.get('vcs_options', {}).get('svn', []))
+
+        if '--internal-diff' not in params and self.settings.get('svn_use_internal_diff', True):
             params.append('--internal-diff')
+
+        # if file starts with @, use `--revision HEAD` option
+        # https://github.com/gornostal/Modific/issues/17
         if file_name.find('@') != -1:
             file_name += '@'
             params.extend(['--revision', 'HEAD'])
-        params.extend([file_name])
+
+        params.append(file_name)
         return params
 
     def bzr_diff_command(self, file_name):
-        return [self.get_user_command('bzr') or 'bzr', 'diff', file_name]
+        vcs_options = self.settings.get('vcs_options', {}).get('bzr', [])
+        return [self.get_user_command('bzr') or 'bzr', 'diff'] + vcs_options + [file_name]
 
     def hg_diff_command(self, file_name):
-        return [self.get_user_command('hg') or 'hg', 'diff', file_name]
+        vcs_options = self.settings.get('vcs_options', {}).get('hg', [])
+        return [self.get_user_command('hg') or 'hg', 'diff'] + vcs_options + [file_name]
 
 
 class ShowDiffCommand(DiffCommand, sublime_plugin.TextCommand):
