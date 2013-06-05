@@ -36,7 +36,7 @@ The "Packages" directory is located at:
 
 Please, make sure your VCS binaries is in the PATH (**especially if you are on Windows**).
 
-To do that on Windows, open `Controll Panel -> System -> Advanced system settings -> Environment variables -> System Variables`, find PATH, click "Edit" and append `;C:\path\to\VCS\binaries` for every VCS you will use (or make sure it's already there).
+To do that on Windows, open `Control Panel -> System -> Advanced system settings -> Environment variables -> System Variables`, find PATH, click "Edit" and append `;C:\path\to\VCS\binaries` for every VCS you will use (or make sure it's already there).
 
 Features / Usage
 ----------------
