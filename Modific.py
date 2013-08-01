@@ -101,6 +101,7 @@ class CommandThread(threading.Thread):
         try:
             # Per http://bugs.python.org/issue8557 shell=True is required to
             # get $PATH on Windows. Yay portable code.
+            shell = os.name == 'nt'
             if self.working_dir != "":
                 os.chdir(self.working_dir)
 
@@ -109,7 +110,8 @@ class CommandThread(threading.Thread):
 
             proc = subprocess.Popen(self.command,
                 stdout=self.stdout, stderr=subprocess.STDOUT,
-                stdin=subprocess.PIPE)
+                stdin=subprocess.PIPE,
+                shell=shell, universal_newlines=True)
             output = proc.communicate(self.stdin)[0]
             if not output:
                 output = ''
