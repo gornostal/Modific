@@ -420,7 +420,7 @@ class DiffParser(object):
 
 class HlChangesCommand(DiffCommand, sublime_plugin.TextCommand):
     def hl_lines(self, lines, hl_key):
-        if (not len(lines)):
+        if (not len(lines) or not self.settings.get('highlight_changes')):
             self.view.erase_regions(hl_key)
             return
 
