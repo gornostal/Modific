@@ -1,5 +1,8 @@
-    // Modific default settings
+// Modific default settings
 {
+    // Highlight changes
+    "highlight_changes": true,
+
     // Name of a region icon
     // Valid icon names are: modific, dot, circle, bookmark and cross
     // WARNING: if you set value different than 'modific',
