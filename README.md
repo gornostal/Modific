@@ -76,6 +76,11 @@ If some sacred punishment has been bestowed upon you, and you have no other choi
 
 If you use different than the default theme, you can customize colors of bullets on the gutter by adding [this](https://gist.github.com/3692073) chunk of code to your theme.
 
+### SVN users
+If you are using SVN 1.7 you may want to turn on option `svn_use_internal_diff`.   
+This instructs Subversion to use its built-in differencing engine
+despite any external differencing mechanism that may be specified for use in the user's runtime configuration.
+
 Thanks to
 ---------
 
