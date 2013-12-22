@@ -10,6 +10,7 @@ import re
 
 IS_ST3 = sublime.version().startswith('3')
 
+
 def get_settings():
     return sublime.load_settings("Modific.sublime-settings")
 
@@ -29,8 +30,7 @@ def vcs_root(directory):
     """
 
     vcs_check = [(lambda vcs: lambda dir: os.path.exists(os.path.join(dir, '.' + vcs))
-                                      and {'root': dir, 'name': vcs})(vcs)
-                   for vcs, _ in get_vcs_settings()]
+                 and {'root': dir, 'name': vcs})(vcs) for vcs, _ in get_vcs_settings()]
 
     while directory:
         available = list(filter(lambda x: x, [check(directory) for check in vcs_check]))
@@ -109,22 +109,22 @@ class CommandThread(threading.Thread):
                 self.command = [s.encode(self.console_encoding) for s in self.command]
 
             proc = subprocess.Popen(self.command,
-                stdout=self.stdout, stderr=subprocess.STDOUT,
-                stdin=subprocess.PIPE,
-                shell=shell, universal_newlines=True)
+                                    stdout=self.stdout, stderr=subprocess.STDOUT,
+                                    stdin=subprocess.PIPE,
+                                    shell=shell, universal_newlines=True)
             output = proc.communicate(self.stdin)[0]
             if not output:
                 output = ''
             # if sublime's python gets bumped to 2.7 we can just do:
             # output = subprocess.check_output(self.command)
             main_thread(self.on_done,
-                _make_text_safeish(output, self.fallback_encoding), **self.kwargs)
+                        _make_text_safeish(output, self.fallback_encoding), **self.kwargs)
         except subprocess.CalledProcessError as e:
             main_thread(self.on_done, e.returncode)
         except OSError as e:
             if e.errno == 2:
                 main_thread(sublime.error_message,
-                    "'%s' binary could not be found in PATH\n\nConsider using `vcs` property to specify PATH\n\nPATH is: %s" % (self.command[0], os.environ['PATH']))
+                            "'%s' binary could not be found in PATH\n\nConsider using `vcs` property to specify PATH\n\nPATH is: %s" % (self.command[0], os.environ['PATH']))
             else:
                 raise e
 
@@ -156,7 +156,7 @@ class VcsCommand(object):
         super(VcsCommand, self).__init__(*args, **kwargs)
 
     def run_command(self, command, callback=None, show_status=True,
-            filter_empty_args=True, **kwargs):
+                    filter_empty_args=True, **kwargs):
         if filter_empty_args:
             command = [arg for arg in command if arg]
         if 'working_dir' not in kwargs:
@@ -176,7 +176,7 @@ class VcsCommand(object):
 
         if show_status:
             message = kwargs.get('status_message', False) or ' '.join(command)
-            sublime.status_message(message)
+            sublime.status_message(message + 'wef')
 
     def generic_done(self, result):
         if self.may_change_files and self.active_view() and self.active_view().file_name():
@@ -194,7 +194,7 @@ class VcsCommand(object):
         self.panel(result)
 
     def _output_to_view(self, output_file, output, clear=False,
-            syntax="Packages/Diff/Diff.tmLanguage"):
+                        syntax="Packages/Diff/Diff.tmLanguage"):
         output_file.set_syntax_file(syntax)
         if clear:
             output_file.run_command('edit_view', dict(command='replace', region=[0, self.output_view.size()], output=output))
@@ -432,8 +432,7 @@ class HlChangesCommand(DiffCommand, sublime_plugin.TextCommand):
                 icon = '../Modific/icons/' + hl_key
         points = [self.view.text_point(l - 1, 0) for l in lines]
         regions = [sublime.Region(p, p) for p in points]
-        self.view.add_regions(hl_key, regions, "markup.%s.diff" % hl_key,
-            icon, sublime.HIDDEN | sublime.DRAW_EMPTY)
+        self.view.add_regions(hl_key, regions, "markup.%s.diff" % hl_key, icon, sublime.HIDDEN | sublime.DRAW_EMPTY)
 
     def diff_done(self, diff):
         if diff and '@@' not in diff:
@@ -602,15 +601,14 @@ class UncommittedFilesCommand(VcsCommand, sublime_plugin.WindowCommand):
 
     def status_done(self, result):
         self.results = list(filter(lambda x: len(x) > 0 and not x.lstrip().startswith('>'),
-            result.rstrip().split('\n')))
+                            result.rstrip().split('\n')))
         if len(self.results):
             self.show_status_list()
         else:
             sublime.status_message("Nothing to show")
 
     def show_status_list(self):
-        self.get_window().show_quick_panel(self.results, self.panel_done,
-            sublime.MONOSPACE_FONT)
+        self.get_window().show_quick_panel(self.results, self.panel_done, sublime.MONOSPACE_FONT)
 
     def panel_done(self, picked):
         if 0 > picked < len(self.results):
