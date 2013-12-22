@@ -155,7 +155,7 @@ class VcsCommand(object):
         self.settings = get_settings()
         super(VcsCommand, self).__init__(*args, **kwargs)
 
-    def run_command(self, command, callback=None, show_status=True,
+    def run_command(self, command, callback=None, show_status=False,
                     filter_empty_args=True, **kwargs):
         if filter_empty_args:
             command = [arg for arg in command if arg]
