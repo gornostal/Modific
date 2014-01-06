@@ -2,5 +2,17 @@
     {
         "caption": "Modific: Show diff",
         "command": "show_diff"
+    },
+    {
+        "caption": "Modific: Show original part",
+        "command": "show_original_part"
+    },
+    {
+        "caption": "Modific: Revert modified part",
+        "command": "replace_modified_part"
+    },
+    {
+        "caption": "Modific: Show uncommitted files",
+        "command": "uncommitted_files"
     }
 ]
