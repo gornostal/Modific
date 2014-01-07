@@ -568,6 +568,21 @@ class UncommittedFilesCommand(VcsCommand, sublime_plugin.WindowCommand):
     def active_view(self):
         return self.window.active_view()
 
+    def is_enabled(self):
+        return bool(self.get_working_dir())
+
+    def get_working_dir(self):
+        if self._active_file_name():
+            working_dir = super(UncommittedFilesCommand, self).get_working_dir()
+            if working_dir and get_vcs(working_dir):
+                return working_dir
+
+        # If the user has opened a vcs folder, use it.
+        folders = self.window.folders()
+        for folder in folders:
+            if folder and os.path.exists(folder) and get_vcs(folder):
+                return folder
+
     def run(self):
         self.root, self.vcs = vcs_root(self.get_working_dir())
         status_command = getattr(self, '{0}_status_command'.format(self.vcs['name']), None)
