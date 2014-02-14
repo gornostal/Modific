@@ -41,7 +41,7 @@ To do that on Windows, open `Control Panel -> System -> Advanced system settings
 Features / Usage
 ----------------
 
-**Highlight changes** *(automatically: on save or when window gets focus)*
+**Highlight changes** *(when file is saved)*
 [![Highlight changes](http://i.imgur.com/DX8TeJTl.jpg)](http://i.imgur.com/DX8TeJT.jpg)
 
 **Show diff** `Ctrl+Alt+D` on Linux/Windows and OS X

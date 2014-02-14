@@ -31,8 +31,8 @@
     // if true, plugin prints some debug information to the console window
     "debug": false,
 
-    // set to false to disable automatic saving
-    "autosave": true,
+    // set to true to enable automatic saving
+    "autosave": false,
 
     // Turn this option on if you're using SVN 1.7 or higher
     // this instructs Subversion to use its built-in differencing engine
