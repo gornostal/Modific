@@ -17,21 +17,36 @@ def get_settings():
 
 def get_vcs_settings():
     return get_settings().get('vcs', [
-        ["git", "git"],
-        ["svn", "svn"],
-        ["bzr", "bzr"],
-        ["hg", "hg"]
+        ["git", {"dir" : ".git", "cmd" : "git"}],
+        ["svn", {"dir" : ".svn", "cmd" : "svn"}],
+        ["bzr", {"dir" : ".bzr", "cmd" : "bzr"}],
+        ["hg", {"dir" : ".hg", "cmd" : "hg"}],
+        ["tf", {"dir" : "$tf", "cmd" : "C:/Program Files (x86)/Microsoft Visual Studio 10.0/Common7/IDE/TF.exe"}]
     ])
 
+def tfs_root(directory):
+    try:
+        command = [dict(get_vcs_settings()).get('tf', False).get('cmd', False) or 'tf', 'workfold', directory]
+        shell = True
+        p = subprocess.Popen(command, stdout=subprocess.PIPE, stderr=subprocess.PIPE,
+                                    shell=shell, universal_newlines=True)
+        out, err = p.communicate()
+        m = re.search(r"^ \$\S+: (\S+)$", out, re.MULTILINE)
+        if m:
+            return m.group(1), {'root': None, 'name': 'tf'}
+    except subprocess.CalledProcessError as e:
+        main_thread(self.on_done, e.returncode)
+    return None, None
 
 def vcs_root(directory):
     """
     Determines root directory for VCS
     """
 
-    vcs_check = [(lambda vcs: lambda dir: os.path.exists(os.path.join(dir, '.' + vcs))
-                 and {'root': dir, 'name': vcs})(vcs) for vcs, _ in get_vcs_settings()]
+    vcs_check = [(lambda vcs_dir: lambda dir: os.path.exists    (os.path.join(dir, vcs_dir))
+                 and {'root': dir, 'name': vcs_dir})(vcs.get("dir", False)) for _, vcs in get_vcs_settings()]
 
+    start_directory = directory
     while directory:
         available = list(filter(lambda x: x, [check(directory) for check in vcs_check]))
         if available:
@@ -40,10 +55,10 @@ def vcs_root(directory):
         parent = os.path.realpath(os.path.join(directory, os.path.pardir))
         if parent == directory:
             # /.. == /
-            return None, None
+            return  tfs_root(start_directory)
         directory = parent
-    return None, None
 
+    return None, None
 
 def get_vcs(directory):
     """
@@ -252,7 +267,7 @@ class VcsCommand(object):
         return False
 
     def get_user_command(self, vcs_name):
-        return dict(get_vcs_settings()).get(vcs_name, False)
+        return dict(get_vcs_settings()).get(vcs_name, False).get("cmd", False)
 
 
 class DiffCommand(VcsCommand):
@@ -302,6 +317,10 @@ class DiffCommand(VcsCommand):
     def hg_diff_command(self, file_name):
         vcs_options = self.settings.get('vcs_options', {}).get('hg', [])
         return [self.get_user_command('hg') or 'hg', 'diff'] + vcs_options + [file_name]
+
+    def tf_diff_command(self, file_name):
+        vcs_options = self.settings.get('vcs_options', {}).get('tf') or ['-format:unified']
+        return [self.get_user_command('tf') or 'tf', 'diff'] + vcs_options + [file_name]
 
 
 class ShowDiffCommand(DiffCommand, sublime_plugin.TextCommand):
@@ -609,6 +628,32 @@ class UncommittedFilesCommand(VcsCommand, sublime_plugin.WindowCommand):
     def hg_status_command(self):
         return [self.get_user_command('hg') or 'hg', 'status']
 
+    def tf_status_command(self):
+        return [self.get_user_command('tf') or 'tf', 'folderdiff', self.root, '/recursive', '/view:different' ,'/noprompt']
+
+    def filter_unified_status(self, result):
+        return list(filter(lambda x: len(x) > 0 and not x.lstrip().startswith('>'),
+                            result.rstrip().split('\n')))
+
+    def git_filter_status(self, result):
+        return self.filter_unified_status(result)
+
+    def svn_filter_status(self, result):
+        return self.filter_unified_status(result)
+
+    def bzr_filter_status(self, result):
+        return self.filter_unified_status(result)
+
+    def hg_filter_status(self, result):
+        return self.filter_unified_status(result)
+
+    def tf_filter_status(self, result):
+        filtered = []
+        for line in result.split('\n'):
+            if line.startswith('\t'):
+                filtered += [line.strip()]
+        return filtered
+
     def git_status_file(self, file_name):
         # first 2 characters are status codes, the third is a space
         return file_name[3:]
@@ -622,9 +667,12 @@ class UncommittedFilesCommand(VcsCommand, sublime_plugin.WindowCommand):
     def hg_status_file(self, file_name):
         return file_name[2:]
 
+    def tf_status_file(self, file_name):
+        return file_name
+
     def status_done(self, result):
-        self.results = list(filter(lambda x: len(x) > 0 and not x.lstrip().startswith('>'),
-                            result.rstrip().split('\n')))
+        filter_status = getattr(self, '{0}_filter_status'.format(self.vcs['name']), None)
+        self.results = filter_status(result)
         if len(self.results):
             self.show_status_list()
         else:

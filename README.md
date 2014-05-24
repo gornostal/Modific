@@ -3,7 +3,7 @@ Modific
 
 Modific is a ST2(3) plugin for highlighting lines changed since the last commit (you know what I mean if you used Netbeans).
 
-For now it supports **Git**, **SVN**, **Bazaar** and **Mercurial**.
+For now it supports **Git**, **SVN**, **Bazaar**, **Mercurial** and **TFS**.
 
 
 Install
