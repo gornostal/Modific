@@ -20,7 +20,7 @@ def get_vcs_settings():
     Returns list of dictionaries
     each dict. represents settings for VCS
     """
-    
+
     default = [
         {"name": "git", "dir": ".git", "cmd": "git"},
         {"name": "svn", "dir": ".svn", "cmd": "svn"},
@@ -36,6 +36,7 @@ def get_vcs_settings():
 
     return settings
 
+
 def get_user_command(vcs_name):
     """
     Returns command that user specified for vcs_name
@@ -46,18 +47,19 @@ def get_user_command(vcs_name):
     except IndexError:
         return None
 
+
 def tfs_root(directory):
     try:
         tf_cmd = get_user_command('tf') or 'tf'
         command = [tf_cmd, 'workfold', directory]
         p = subprocess.Popen(command, stdout=subprocess.PIPE, stderr=subprocess.PIPE,
-                            shell=True, universal_newlines=True)
+                             shell=True, universal_newlines=True)
         out, err = p.communicate()
         m = re.search(r"^ \$\S+: (\S+)$", out, re.MULTILINE)
         if m:
             return {'root': m.group(1), 'name': 'tf', 'cmd': tf_cmd}
-    except subprocess.CalledProcessError as e:
-        main_thread(self.on_done, e.returncode)
+    except:
+        return None
 
 
 def get_vcs(directory):
@@ -80,8 +82,8 @@ def get_vcs(directory):
         parent = os.path.realpath(os.path.join(directory, os.path.pardir))
         if parent == directory:  # /.. == /
             # try TFS as a last resort
-            tfsr = tfs_root(start_directory)
-            return tfsr
+            # I'm not sure why we need to do this. Seems like it should find root for TFS in the main loop
+            return tfs_root(start_directory)
         directory = parent
 
     return None
@@ -283,7 +285,6 @@ class VcsCommand(object):
         if file_name and os.path.exists(file_name):
             return bool(get_vcs(self.get_working_dir()))
         return False
-
 
 
 class DiffCommand(VcsCommand):
@@ -649,7 +650,7 @@ class UncommittedFilesCommand(VcsCommand, sublime_plugin.WindowCommand):
 
     def filter_unified_status(self, result):
         return list(filter(lambda x: len(x) > 0 and not x.lstrip().startswith('>'),
-                            result.rstrip().split('\n')))
+                    result.rstrip().split('\n')))
 
     def git_filter_status(self, result):
         return self.filter_unified_status(result)
