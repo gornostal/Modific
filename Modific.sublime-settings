@@ -13,11 +13,11 @@
     // You can use your commands instead of plain "git" or "svn"
     // e.g. "/usr/bin/git" or "C:\bin\git.exe"
     "vcs": [
-        ["git", {"dir" : ".git", "cmd" : "git"}],
-        ["svn", {"dir" : ".svn", "cmd" : "svn"}],
-        ["bzr", {"dir" : ".bzr", "cmd" : "bzr"}],
-        ["hg", {"dir" : ".hg", "cmd" : "hg"}],
-        ["tf", {"dir" : "$tf", "cmd" : "C:/Program Files (x86)/Microsoft Visual Studio 10.0/Common7/IDE/TF.exe"}]
+        {"name": "git", "dir": ".git", "cmd": "git"},
+        {"name": "svn", "dir": ".svn", "cmd": "svn"},
+        {"name": "bzr", "dir": ".bzr", "cmd": "bzr"},
+        {"name": "hg",  "dir": ".hg",  "cmd": "hg"},
+        {"name": "tf",  "dir": "$tf",  "cmd": "C:/Program Files (x86)/Microsoft Visual Studio 11.0/Common7/IDE/TF.exe"}
     ],
 
     // default list of options for a diff command for a certain VCS
