@@ -645,7 +645,7 @@ class UncommittedFilesCommand(VcsCommand, sublime_plugin.WindowCommand):
         return [get_user_command('hg') or 'hg', 'status']
 
     def tf_status_command(self):
-        return [get_user_command('tf') or 'tf', 'folderdiff', self.vcs['root'], '/recursive', '/view:different' ,'/noprompt']
+        return [get_user_command('tf') or 'tf', 'status']
 
     def filter_unified_status(self, result):
         return list(filter(lambda x: len(x) > 0 and not x.lstrip().startswith('>'),
@@ -665,9 +665,17 @@ class UncommittedFilesCommand(VcsCommand, sublime_plugin.WindowCommand):
 
     def tf_filter_status(self, result):
         filtered = []
+        can_add = False
         for line in result.split('\n'):
-            if line.startswith('\t'):
-                filtered += [line.strip()]
+            if line.startswith('$'):
+                can_add = True
+                continue
+            if line == '':
+                can_add = False
+                continue
+            if can_add:
+                filtered.append(line)
+
         return filtered
 
     def git_status_file(self, file_name):
@@ -684,7 +692,11 @@ class UncommittedFilesCommand(VcsCommand, sublime_plugin.WindowCommand):
         return file_name[2:]
 
     def tf_status_file(self, file_name):
-        return file_name
+        try:
+            # assume that file name should always contain colon
+            return re.findall(r'\s+(\S+:.+)$', file_name)[0]
+        except:
+            return None
 
     def status_done(self, result):
         filter_status = getattr(self, '{0}_filter_status'.format(self.vcs['name']), None)
