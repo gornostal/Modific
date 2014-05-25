@@ -24,7 +24,7 @@ The "Packages" directory is located at:
 
 * OS X:
 
-        ~/Library/Application Support/Sublime Text 2/Packages/
+        ~/Library/Application Support/Sublime Text 3/Packages/
 
 * Linux:
 
@@ -32,9 +32,9 @@ The "Packages" directory is located at:
 
 * Windows:
 
-        %APPDATA%/Sublime Text 2/Packages/
+        %APPDATA%/Roaming/Sublime Text 3/Packages/
 
-Please, make sure your VCS binaries is in the PATH (**especially if you are on Windows**).
+Please, make sure your VCS (version control system) binaries is in the PATH (**especially if you are on Windows**).
 
 To do that on Windows, open `Control Panel -> System -> Advanced system settings -> Environment variables -> System Variables`, find PATH, click "Edit" and append `;C:\path\to\VCS\binaries` for every VCS you will use (or make sure it's already there).
 
