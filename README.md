@@ -32,11 +32,11 @@ The "Packages" directory is located at:
 
 * Windows:
 
-        %APPDATA%/Sublime Text 2/Packages/
+        %APPDATA%/Roaming/Sublime Text 2/Packages/ or %APPDATA%/Roaming/Sublime Text 3/Packages/
 
-Please, make sure your VCS binaries is in the PATH (**especially if you are on Windows**).
+Please, make sure your CVS binaries is in the PATH (**especially if you are on Windows**).
 
-To do that on Windows, open `Control Panel -> System -> Advanced system settings -> Environment variables -> System Variables`, find PATH, click "Edit" and append `;C:\path\to\VCS\binaries` for every VCS you will use (or make sure it's already there).
+To do that on Windows, open `Control Panel -> System -> Advanced system settings -> Environment variables -> System Variables`, find PATH, click "Edit" and append `;C:\path\to\CVS\binaries` for every CVS you will use (or make sure it's already there).
 
 Features / Usage
 ----------------
@@ -70,9 +70,9 @@ Open `Prefrences -> Package Settings -> Modific -> Settings - Default` and look 
 
 If you want to change something, don't do it in this file. Open `Preferences -> Package Settings -> Modific -> Settings - User` and put there your configuration.
 
-You can configure is a type of icon (dot, circle or bookmark) and path for your VCS binaries (or leave them as is, if you have them in your PATH). It's also possible to set priority for VCS used (when you have more than one simultaneously) by reordering their definitions.
+You can configure is a type of icon (dot, circle or bookmark) and path for your CVS binaries (or leave them as is, if you have them in your PATH). It's also possible to set priority for CVS used (when you have more than one simultaneously) by reordering their definitions.
 
-If some sacred punishment has been bestowed upon you, and you have no other choice but to use OS, where console has non-UTF8 encoding, you can set console_encoding parameter to the name of your beloved encoding. This parameter is specifically designed for Windows XP users, who have their git repositories in folders with cyrillic path. Since russian XP uses CP1251 as default encoding (including console), VCS diff commands will be encoded appropriately, when using this parameter.
+If some sacred punishment has been bestowed upon you, and you have no other choice but to use OS, where console has non-UTF8 encoding, you can set console_encoding parameter to the name of your beloved encoding. This parameter is specifically designed for Windows XP users, who have their git repositories in folders with cyrillic path. Since russian XP uses CP1251 as default encoding (including console), CVS diff commands will be encoded appropriately, when using this parameter.
 
 If you use different than the default theme, you can customize colors of bullets on the gutter by adding [this](https://gist.github.com/3692073) chunk of code to your theme.
 
