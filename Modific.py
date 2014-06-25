@@ -539,12 +539,24 @@ class ReplaceModifiedPartCommand(DiffCommand, sublime_plugin.TextCommand):
 
 class HlChangesBackground(sublime_plugin.EventListener):
     def on_load(self, view):
+        if not IS_ST3:
+            view.run_command('hl_changes')
+
+    def on_load_async(self, view):
         view.run_command('hl_changes')
 
     def on_activated(self, view):
+        if not IS_ST3:
+            view.run_command('hl_changes')
+
+    def on_activated_async(self, view):
         view.run_command('hl_changes')
 
     def on_post_save(self, view):
+        if not IS_ST3:
+            view.run_command('hl_changes')
+
+    def on_post_save_async(self, view):
         view.run_command('hl_changes')
 
 
