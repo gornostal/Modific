@@ -534,7 +534,6 @@ class ReplaceModifiedPartCommand(DiffCommand, sublime_plugin.TextCommand):
                     self.view.run_command('edit_view', dict(command='erase', region=[region.begin(), region.end()]))
             else:
                 self.view.run_command('edit_view', dict(command='insert', begin=begin, output=content + os.linesep))
-            self.view.run_command('save')
 
 
 class HlChangesBackground(sublime_plugin.EventListener):
