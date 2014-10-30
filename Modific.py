@@ -9,7 +9,7 @@ import threading
 import subprocess
 import functools
 import re
-
+import copy
 
 IS_ST3 = sublime.version().startswith('3')
 
@@ -766,15 +766,27 @@ class UncommittedFilesCommand(VcsCommand, sublime_plugin.WindowCommand):
             sublime.status_message("Nothing to show")
 
     def show_status_list(self):
-        self.get_window().show_quick_panel(self.results, self.panel_done, sublime.MONOSPACE_FONT)
+        show_list = copy.copy(self.results)
+        show_list.insert(0, " - Open All")
+        self.get_window().show_quick_panel(show_list, self.panel_done, sublime.MONOSPACE_FONT)
 
     def panel_done(self, picked):
-        if 0 > picked < len(self.results):
+        if picked == 0:
+            self.open_all()
             return
-        picked_file = self.results[picked]
+        elif 0 > picked < len(self.results):
+            return
+        picked_file = self.results[picked - 1]
         get_file = getattr(self, '{0}_status_file'.format(self.vcs['name']), None)
         if (get_file):
             self.open_file(get_file(picked_file))
+
+    def open_all(self):
+        for f in self.results:
+            picked_file = f
+            get_file = getattr(self, '{0}_status_file'.format(self.vcs['name']), None)
+            if (get_file):
+                self.open_file(get_file(picked_file))
 
     def open_file(self, picked_file):
         if os.path.isfile(os.path.join(self.vcs['root'], picked_file)):
