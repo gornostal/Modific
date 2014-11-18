@@ -81,6 +81,12 @@ If you are using SVN 1.7 you may want to turn on option `svn_use_internal_diff`.
 This instructs Subversion to use its built-in differencing engine
 despite any external differencing mechanism that may be specified for use in the user's runtime configuration.
 
+### Line endings
+Modific takes into account `default_line_ending` setting that you can change in your "User Settings" (or per project/file basis).  
+It determines what characters to use to join lines when Modific does "Revert change" action.  
+Valid values: `system` (OS-dependent), `windows` (CRLF) and `unix` (LF).
+
+
 Thanks to
 ---------
 

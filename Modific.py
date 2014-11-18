@@ -339,6 +339,21 @@ class DiffCommand(VcsCommand):
         vcs_options = self.settings.get('vcs_options', {}).get('tf') or ['-format:unified']
         return [get_user_command('tf') or 'tf', 'diff'] + vcs_options + [file_name]
 
+    def join_lines(self, lines):
+        """
+        Join lines using os.linesep.join(), unless another method is specified in ST settings
+        """
+        le = self.view.settings().get('default_line_ending')
+        if self.settings.get('debug'):
+            print("use line endings:", le)
+
+        if le == 'windows':
+            return "\r\n".join(lines)
+        elif le == 'unix':
+            return "\n".join(lines)
+
+        return os.linesep.join(lines)
+
 
 class ShowDiffCommand(DiffCommand, sublime_plugin.TextCommand):
     def diff_done(self, result):
@@ -506,7 +521,7 @@ class ShowOriginalPartCommand(DiffCommand, sublime_plugin.TextCommand):
         (row, col) = self.view.rowcol(self.view.sel()[0].begin())
         (lines, start, replace_lines) = diff_parser.get_original_part(row + 1)
         if lines is not None:
-            self.panel(os.linesep.join(lines))
+            self.panel(self.join_lines(lines))
 
 
 class ReplaceModifiedPartCommand(DiffCommand, sublime_plugin.TextCommand):
@@ -523,7 +538,7 @@ class ReplaceModifiedPartCommand(DiffCommand, sublime_plugin.TextCommand):
             print('replace', (lines, current, replace_lines))
         if lines is not None:
             begin = self.view.text_point(current - 1, 0)
-            content = os.linesep.join(lines)
+            content = self.join_lines(lines)
             if replace_lines:
                 end = self.view.line(self.view.text_point(replace_lines + current - 2, 0)).end()
                 region = sublime.Region(begin, end)
