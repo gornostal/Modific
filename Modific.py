@@ -138,12 +138,8 @@ class CommandThread(threading.Thread):
             # get $PATH on Windows. Yay portable code.
             shell = os.name == 'nt'
 
-            # Do not use universal newlines for OS X
-            try:
-                is_osx = os.uname()[0] == 'Darwin'
-            except:
-                is_osx = False
-            universal_newlines = not is_osx
+            # Use universal newlines only for Windows
+            universal_newlines = os.name == 'nt'
 
             if self.working_dir != "":
                 os.chdir(self.working_dir)
