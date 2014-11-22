@@ -153,7 +153,7 @@ class CommandThread(threading.Thread):
             shell = os.name == 'nt'
 
             # Use universal newlines only for Windows
-            universal_newlines = os.name == 'nt'
+            universal_newlines = False
 
             if self.working_dir != "":
                 os.chdir(self.working_dir)
