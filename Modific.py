@@ -1,4 +1,7 @@
 # -*- coding: utf-8 -*-
+
+from __future__ import print_function
+
 import sublime
 import sublime_plugin
 import os
@@ -117,7 +120,18 @@ def do_when(conditional, callback, *args, **kwargs):
     sublime.set_timeout(functools.partial(do_when, conditional, callback, *args, **kwargs), 50)
 
 
+def log(*args, debug=False, settings=None):
+    if not settings:
+        settings = get_settings()
+
+    if debug and not settings.get('debug', False):
+        return
+
+    print('Modific:', *args)
+
+
 class CommandThread(threading.Thread):
+
     def __init__(self, command, on_done, working_dir="", fallback_encoding="", console_encoding="", **kwargs):
         threading.Thread.__init__(self)
         self.command = command
@@ -146,6 +160,8 @@ class CommandThread(threading.Thread):
 
             if self.console_encoding:
                 self.command = [s.encode(self.console_encoding) for s in self.command]
+
+            log('try to run command:', ' '.join(self.command), debug=True)
 
             proc = subprocess.Popen(self.command,
                                     stdout=self.stdout, stderr=subprocess.STDOUT,
@@ -194,6 +210,9 @@ class VcsCommand(object):
         self.settings = get_settings()
         super(VcsCommand, self).__init__(*args, **kwargs)
 
+    def log(self, *args, **kwargs):
+        return log(settings=self.settings, *args, **kwargs)
+
     def run_command(self, command, callback=None, show_status=False,
                     filter_empty_args=True, **kwargs):
         if filter_empty_args:
@@ -218,6 +237,7 @@ class VcsCommand(object):
             sublime.status_message(message + 'wef')
 
     def generic_done(self, result):
+        self.log('generic_done', result, debug=True)
         if self.may_change_files and self.active_view() and self.active_view().file_name():
             if self.active_view().is_dirty():
                 result = "WARNING: Current view is dirty.\n\n"
@@ -226,7 +246,8 @@ class VcsCommand(object):
                 print("reverting")
                 position = self.active_view().viewport_position()
                 self.active_view().run_command('revert')
-                do_when(lambda: not self.active_view().is_loading(), lambda: self.active_view().set_viewport_position(position, False))
+                do_when(lambda: not self.active_view().is_loading(),
+                        lambda: self.active_view().set_viewport_position(position, False))
 
         if not result.strip():
             return
@@ -301,7 +322,7 @@ class DiffCommand(VcsCommand):
             self.run_command(get_command(filename), self.diff_done)
 
     def diff_done(self, result):
-        pass
+        self.log('diff_done', result, debug=True)
 
     def git_diff_command(self, file_name):
         vcs_options = self.settings.get('vcs_options', {}).get('git') or ['--no-color', '--no-ext-diff']
@@ -353,6 +374,8 @@ class DiffCommand(VcsCommand):
 
 class ShowDiffCommand(DiffCommand, sublime_plugin.TextCommand):
     def diff_done(self, result):
+        self.log('on show_diff', result, debug=True)
+
         if not result.strip():
             return
 
@@ -490,6 +513,8 @@ class HlChangesCommand(DiffCommand, sublime_plugin.TextCommand):
         self.view.add_regions(hl_key, regions, "markup.%s.diff" % hl_key, icon, sublime.HIDDEN | sublime.DRAW_EMPTY)
 
     def diff_done(self, diff):
+        self.log('on hl_changes:', diff, debug=True)
+
         if diff and '@@' not in diff:
             # probably this is an error message
             # if print raise UnicodeEncodeError, try to encode string to utf-8 (issue #35)
@@ -501,8 +526,10 @@ class HlChangesCommand(DiffCommand, sublime_plugin.TextCommand):
         diff_parser = DiffParser(diff)
         (inserted, changed, deleted) = diff_parser.get_lines_to_hl()
 
-        if self.settings.get('debug'):
-            print(inserted, changed, deleted)
+        self.log('new lines:', inserted, debug=True)
+        self.log('modified lines:', changed, debug=True)
+        self.log('deleted lines:', deleted, debug=True)
+
         self.hl_lines(inserted, 'inserted')
         self.hl_lines(deleted, 'deleted')
         self.hl_lines(changed, 'changed')
