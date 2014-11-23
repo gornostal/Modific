@@ -120,7 +120,15 @@ def do_when(conditional, callback, *args, **kwargs):
     sublime.set_timeout(functools.partial(do_when, conditional, callback, *args, **kwargs), 50)
 
 
-def log(*args, debug=False, settings=None):
+def log(*args, **kwargs):
+    """
+    @param *args: string arguments that should be logged to console
+    @param debug=True: debug log mode
+    @param settings=None: instance of sublime.Settings
+    """
+    debug = kwargs.get('debug', True)
+    settings = kwargs.get('settings', None)
+
     if not settings:
         settings = get_settings()
 
@@ -161,7 +169,7 @@ class CommandThread(threading.Thread):
             if self.console_encoding:
                 self.command = [s.encode(self.console_encoding) for s in self.command]
 
-            log('try to run command:', ' '.join(self.command), debug=True)
+            log('try to run command:', ' '.join(self.command))
 
             proc = subprocess.Popen(self.command,
                                     stdout=self.stdout, stderr=subprocess.STDOUT,
@@ -237,7 +245,7 @@ class VcsCommand(object):
             sublime.status_message(message + 'wef')
 
     def generic_done(self, result):
-        self.log('generic_done', result, debug=True)
+        self.log('generic_done', result)
         if self.may_change_files and self.active_view() and self.active_view().file_name():
             if self.active_view().is_dirty():
                 result = "WARNING: Current view is dirty.\n\n"
@@ -322,7 +330,7 @@ class DiffCommand(VcsCommand):
             self.run_command(get_command(filename), self.diff_done)
 
     def diff_done(self, result):
-        self.log('diff_done', result, debug=True)
+        self.log('diff_done', result)
 
     def git_diff_command(self, file_name):
         vcs_options = self.settings.get('vcs_options', {}).get('git') or ['--no-color', '--no-ext-diff']
@@ -374,7 +382,7 @@ class DiffCommand(VcsCommand):
 
 class ShowDiffCommand(DiffCommand, sublime_plugin.TextCommand):
     def diff_done(self, result):
-        self.log('on show_diff', result, debug=True)
+        self.log('on show_diff', result)
 
         if not result.strip():
             return
@@ -513,7 +521,7 @@ class HlChangesCommand(DiffCommand, sublime_plugin.TextCommand):
         self.view.add_regions(hl_key, regions, "markup.%s.diff" % hl_key, icon, sublime.HIDDEN | sublime.DRAW_EMPTY)
 
     def diff_done(self, diff):
-        self.log('on hl_changes:', diff, debug=True)
+        self.log('on hl_changes:', diff)
 
         if diff and '@@' not in diff:
             # probably this is an error message
@@ -526,9 +534,9 @@ class HlChangesCommand(DiffCommand, sublime_plugin.TextCommand):
         diff_parser = DiffParser(diff)
         (inserted, changed, deleted) = diff_parser.get_lines_to_hl()
 
-        self.log('new lines:', inserted, debug=True)
-        self.log('modified lines:', changed, debug=True)
-        self.log('deleted lines:', deleted, debug=True)
+        self.log('new lines:', inserted)
+        self.log('modified lines:', changed)
+        self.log('deleted lines:', deleted)
 
         self.hl_lines(inserted, 'inserted')
         self.hl_lines(deleted, 'deleted')
