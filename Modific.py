@@ -169,8 +169,6 @@ class CommandThread(threading.Thread):
             if self.console_encoding:
                 self.command = [s.encode(self.console_encoding) for s in self.command]
 
-            log('try to run command:', ' '.join(self.command))
-
             proc = subprocess.Popen(self.command,
                                     stdout=self.stdout, stderr=subprocess.STDOUT,
                                     stdin=subprocess.PIPE,
@@ -237,6 +235,7 @@ class VcsCommand(object):
         if not callback:
             callback = self.generic_done
 
+        log('run command:', ' '.join(command))
         thread = CommandThread(command, callback, **kwargs)
         thread.start()
 
