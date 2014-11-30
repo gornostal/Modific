@@ -56,7 +56,7 @@ def tfs_root(directory):
         tf_cmd = get_user_command('tf') or 'tf'
         command = [tf_cmd, 'workfold', directory]
         p = subprocess.Popen(command, stdout=subprocess.PIPE, stderr=subprocess.PIPE,
-                             shell=True, universal_newlines=True)
+                             shell=True, universal_newlines=False)
         out, err = p.communicate()
         m = re.search(r"^ \$\S+: (\S+)$", out, re.MULTILINE)
         if m:
@@ -152,9 +152,6 @@ class CommandThread(threading.Thread):
             # get $PATH on Windows. Yay portable code.
             shell = os.name == 'nt'
 
-            # Use universal newlines only for Windows
-            universal_newlines = False
-
             if self.working_dir != "":
                 os.chdir(self.working_dir)
 
@@ -166,7 +163,7 @@ class CommandThread(threading.Thread):
             proc = subprocess.Popen(self.command,
                                     stdout=self.stdout, stderr=subprocess.STDOUT,
                                     stdin=subprocess.PIPE,
-                                    shell=shell, universal_newlines=universal_newlines)
+                                    shell=shell, universal_newlines=False)
             output = proc.communicate(self.stdin)[0]
             if not output:
                 output = ''
