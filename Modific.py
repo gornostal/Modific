@@ -784,3 +784,14 @@ class UncommittedFilesCommand(VcsCommand, sublime_plugin.WindowCommand):
                     self.window.open_file(os.path.join(self.vcs['root'], fname))
                 else:
                     sublime.status_message("File '{0}' doesn't exist".format(fname))
+
+
+class ToggleHighlightChangesCommand(sublime_plugin.TextCommand):
+    def run(self, edit):
+        v_setting = "highlight_changes"
+        if get_settings().get(v_setting):
+        	get_settings().set(v_setting, False)
+        	self.view.run_command('save')
+        else:
+        	get_settings().set(v_setting, True)
+        	self.view.run_command('save')

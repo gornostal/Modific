@@ -14,5 +14,9 @@
     {
         "caption": "Modific: Show uncommitted files",
         "command": "uncommitted_files"
+    },
+    {
+        "caption": "Modific: Toggle highlight changes",
+        "command": "toggle_highlight_changes"
     }
 ]
