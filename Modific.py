@@ -789,9 +789,13 @@ class UncommittedFilesCommand(VcsCommand, sublime_plugin.WindowCommand):
 class ToggleHighlightChangesCommand(sublime_plugin.TextCommand):
     def run(self, edit):
         v_setting = "highlight_changes"
-        if get_settings().get(v_setting):
-        	get_settings().set(v_setting, False)
+        settings = get_settings()
+
+        if settings.get(v_setting):
+        	settings.set(v_setting, False)
         	self.view.run_command('save')
         else:
-        	get_settings().set(v_setting, True)
+        	settings.set(v_setting, True)
         	self.view.run_command('save')
+        
+        sublime.save_settings("Modific.sublime-settings")
