@@ -47,14 +47,14 @@ Features / Usage
 **Show diff** `Ctrl+Alt+D` on Linux/Windows and OS X
 [![Show diff](http://i.imgur.com/csCw7l.jpg)](http://i.imgur.com/csCw7.jpg)
 
-**Preview of the commited code for current line** `Ctrl+Alt+C` on Linux/Windows, `Ctlr+Super+C` on OS X
+**Preview of the commited code for current line** `Ctrl+Alt+C` on Linux/Windows, `Ctrl+Super+C` on OS X
 [![Preview](http://i.imgur.com/siVOXl.jpg)](http://i.imgur.com/siVOX.jpg)
 
-**Revert modification** `Ctrl+Alt+R` on Linux/Windows, `Ctlr+Super+R` on OS X
+**Revert modification** `Ctrl+Alt+R` on Linux/Windows, `Ctrl+Super+R` on OS X
 
 This command reverts modifications if your cursor stays on modified line (or if on group of lines, then whole group will be reverted)
 
-**View uncommitted files in a quick panel** `Ctrl+Alt+U` on Linux/Windows, `Ctlr+Super+U` on OS X
+**View uncommitted files in a quick panel** `Ctrl+Alt+U` on Linux/Windows, `Ctrl+Super+U` on OS X
 [![Preview](http://i.imgur.com/sldHNl.jpg)](http://i.imgur.com/sldHN.jpg)
 
 **Go through changed lines** `Ctrl+Shift+Page Up(Down)`
