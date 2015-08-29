@@ -481,7 +481,7 @@ class DiffParser(object):
                             return_this_lines = True
                         if line.startswith('-'):
                             # if line starts with '-' we have previous version
-                            ret_lines.append(line[1:])
+                            ret_lines.append(line[1:].replace('\r', ''))
                         else:
                             # if line starts with '+' we only increment numbers
                             replace_lines += 1
