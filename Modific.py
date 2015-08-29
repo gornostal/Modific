@@ -364,7 +364,7 @@ class DiffCommand(VcsCommand):
         """
         Join lines using os.linesep.join(), unless another method is specified in ST settings
         """
-        le = self.view.settings().get('default_line_ending')
+        le = self.view.line_endings().lower()
         if self.settings.get('debug'):
             print("use line endings:", le)
 
