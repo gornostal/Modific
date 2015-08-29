@@ -383,6 +383,7 @@ class ShowDiffCommand(DiffCommand, sublime_plugin.TextCommand):
         if not result.strip():
             return
 
+        result = result.replace('\r\n', '\n')
         file_name = re.findall(r'([^\\\/]+)$', self.view.file_name())
         self.scratch(result, title="Diff - " + file_name[0])
 
@@ -755,7 +756,10 @@ class UncommittedFilesCommand(VcsCommand, sublime_plugin.WindowCommand):
 
     def status_done(self, result):
         filter_status = getattr(self, '{0}_filter_status'.format(self.vcs['name']), None)
-        self.results = filter_status(result)
+
+        results = filter_status(result)
+        self.results = [item.replace('\r', '') for item in results]
+
         if len(self.results):
             self.show_status_list()
         else:
