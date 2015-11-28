@@ -63,6 +63,8 @@ For those who expected to see a clone of Netbeans feature - unfortunately, with 
 
 [Discussion on the forum](http://www.sublimetext.com/forum/viewtopic.php?f=5&t=7468)
 
+**Toggle highlighting on/off** `Ctl+Shift+h, Ctrl+Shift+l`
+
 Configuring
 -----------
 

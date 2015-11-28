@@ -793,14 +793,15 @@ class UncommittedFilesCommand(VcsCommand, sublime_plugin.WindowCommand):
 
 class ToggleHighlightChangesCommand(sublime_plugin.TextCommand):
     def run(self, edit):
-        v_setting = "highlight_changes"
+        setting_name = "highlight_changes"
         settings = get_settings()
+        is_on = settings.get(setting_name)
 
-        if settings.get(v_setting):
-        	settings.set(v_setting, False)
-        	self.view.run_command('save')
+        if is_on:
+            # remove highlighting
+            [self.view.erase_regions(k) for k in ('inserted', 'changed', 'deleted')]
         else:
-        	settings.set(v_setting, True)
-        	self.view.run_command('save')
-        
+            self.view.run_command('hl_changes')
+
+        settings.set(setting_name, not is_on)
         sublime.save_settings("Modific.sublime-settings")

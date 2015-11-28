@@ -3,7 +3,7 @@
     { "keys": ["ctrl+super+r"], "command": "replace_modified_part" },
     { "keys": ["ctrl+alt+d"], "command": "show_diff" },
     { "keys": ["ctrl+super+u"], "command": "uncommitted_files" },
-    { "keys": ["ctrl+super+t"], "command": "toggle_highlight_changes" },
+    { "keys": ["ctrl+shift+h", "ctrl+shift+l"], "command": "toggle_highlight_changes" },
 
     { "keys": ["ctrl+shift+pageup"], "command": "jump_between_changes", "args": {"direction": "prev"} },
     { "keys": ["ctrl+shift+pagedown"], "command": "jump_between_changes", "args": {"direction": "next"} }
