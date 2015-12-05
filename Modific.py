@@ -361,14 +361,7 @@ class DiffCommand(VcsCommand):
         return [get_user_command('tf') or 'tf', 'diff'] + vcs_options + [file_name]
 
     def get_line_ending(self):
-        le = self.view.line_endings().lower()
-
-        if le == 'windows':
-            return "\r\n"
-        elif le == 'unix':
-            return "\n"
-        else:
-            return os.linesep
+        return self.settings.get('line_ending', '\n')
 
     def join_lines(self, lines):
         """

@@ -41,5 +41,8 @@
     "svn_use_internal_diff": false,
 
     // File size limit (in KB) for drawing icons on the gutter
-    "max_file_size": 1024
+    "max_file_size": 1024,
+
+    // is used to join lines on 'replace_modified_part' or 'show_original_part' commands
+    "line_ending": "\n"
 }
