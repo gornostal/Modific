@@ -379,7 +379,7 @@ class ShowDiffCommand(DiffCommand, sublime_plugin.TextCommand):
         file_name = re.findall(r'([^\\\/]+)$', self.view.file_name())
         scratch = self.scratch(result, title="Diff - " + file_name[0])
 
-        # MGr: Select the line in the diff output where the cursor is located.
+        # Select the line in the diff output where the cursor is located.
         point = self.view.sel()[0].b
         region = self.view.line(point)
         line = self.view.substr(region)
@@ -387,8 +387,8 @@ class ShowDiffCommand(DiffCommand, sublime_plugin.TextCommand):
         region = scratch.find(line, 0, sublime.LITERAL)
         scratch.show_at_center(region)
         scratch.sel().clear()
-        # scratch.sel().add(region) # Select the line.
-        scratch.sel().add(scratch.line(region).a) # No selection. Just place the cursor.
+        # Place the cursor at the beginning of the line
+        scratch.sel().add(scratch.line(region).a)
 
 
 class DiffParser(object):
