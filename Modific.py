@@ -627,10 +627,11 @@ class JumpBetweenChangesCommand(DiffCommand, sublime_plugin.TextCommand):
                 jump_to = line
                 break
 
-        if not jump_to:
+        if not jump_to and self.settings.get('jump_between_changes_wraps_around', True):
             jump_to = lines[0]
 
-        self.goto_line(edit, jump_to)
+        if jump_to is not None:
+            self.goto_line(edit, jump_to)
 
     def goto_line(self, edit, line):
         # Convert from 1 based to a 0 based line number
@@ -771,7 +772,10 @@ class UncommittedFilesCommand(VcsCommand, sublime_plugin.WindowCommand):
     def show_status_list(self):
         options = copy(self.results)
         options.insert(0, " - Open All")
-        self.get_window().show_quick_panel(options, self.panel_done, sublime.MONOSPACE_FONT)
+        if self.settings.get('uncommitted_files_use_monospace_font', True):
+            self.get_window().show_quick_panel(options, self.panel_done, sublime.MONOSPACE_FONT)
+        else:
+            self.get_window().show_quick_panel(options, self.panel_done)
 
     def panel_done(self, picked):
         if picked == 0:

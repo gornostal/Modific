@@ -41,5 +41,11 @@
     "svn_use_internal_diff": false,
 
     // File size limit (in KB) for drawing icons on the gutter
-    "max_file_size": 1024
+    "max_file_size": 1024,
+
+    // Whether the jump_between_changes command should wrap around to the beginning/end.
+    "jump_between_changes_wraps_around": true,
+
+    // Whether the uncommitted_files command should use a monospace font to dosplay the file list.
+    "uncommitted_files_use_monospace_font": true
 }
