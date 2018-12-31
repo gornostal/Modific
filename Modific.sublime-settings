@@ -44,5 +44,8 @@
     "max_file_size": 1024,
 
     // Whether the jump_between_changes command should wrap around to the beginning/end.
-    "jump_between_changes_wraps_around": true
+    "jump_between_changes_wraps_around": true,
+
+    // Whether the uncommitted_files command should use a monospace font to dosplay the file list.
+    "uncommitted_files_use_monospace_font": true
 }

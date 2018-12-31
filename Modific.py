@@ -772,7 +772,10 @@ class UncommittedFilesCommand(VcsCommand, sublime_plugin.WindowCommand):
     def show_status_list(self):
         options = copy(self.results)
         options.insert(0, " - Open All")
-        self.get_window().show_quick_panel(options, self.panel_done, sublime.MONOSPACE_FONT)
+        if self.settings.get('uncommitted_files_use_monospace_font', True):
+            self.get_window().show_quick_panel(options, self.panel_done, sublime.MONOSPACE_FONT)
+        else:
+            self.get_window().show_quick_panel(options, self.panel_done)
 
     def panel_done(self, picked):
         if picked == 0:
