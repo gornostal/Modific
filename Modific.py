@@ -511,14 +511,17 @@ class HlChangesCommand(DiffCommand, sublime_plugin.TextCommand):
             return
 
         icon = self.settings.get('region_icon') or 'modific'
-        if icon == 'modific':
-            if IS_ST3:
-                icon = 'Packages/Modific/icons/' + hl_key + '.png'
-            else:
-                icon = '../Modific/icons/' + hl_key
-        points = [self.view.text_point(l - 1, 0) for l in lines]
-        regions = [sublime.Region(p, p) for p in points]
-        self.view.add_regions(hl_key, regions, "markup.%s.diff" % hl_key, icon, sublime.HIDDEN | sublime.DRAW_EMPTY)
+        if icon != 'none':
+            if icon == 'modific':
+                if IS_ST3:
+                    icon = 'Packages/Modific/icons/' + hl_key + '.png'
+                else:
+                    icon = '../Modific/icons/' + hl_key
+            elif icon == 'none':
+                icon = ''
+            points = [self.view.text_point(l - 1, 0) for l in lines]
+            regions = [sublime.Region(p, p) for p in points]
+            self.view.add_regions(hl_key, regions, "markup.%s.diff" % hl_key, icon, sublime.HIDDEN | sublime.DRAW_EMPTY)
 
     def diff_done(self, diff):
         self.log('on hl_changes:', diff)

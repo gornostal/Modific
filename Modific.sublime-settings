@@ -4,7 +4,8 @@
     "highlight_changes": true,
 
     // Name of a region icon
-    // Valid icon names are: modific, dot, circle, bookmark and cross
+    // Valid icon names are: modific, dot, circle, bookmark, cross, and none
+    // If 'none' is used, modific does not add region icons.
     // WARNING: if you set value different than 'modific',
     //          you may experience issues with UI of Sublime.
     //          See https://github.com/gornostal/Modific/issues/9
