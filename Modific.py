@@ -713,7 +713,7 @@ class UncommittedFilesCommand(VcsCommand, sublime_plugin.WindowCommand):
 
     def filter_unified_status(self, result):
         return list(filter(lambda x: len(x) > 0 and not x.lstrip().startswith('>'),
-                    result.rstrip().split('\n')))
+                    result.rstrip().replace('"', '').split('\n')))
 
     def git_filter_status(self, result):
         return self.filter_unified_status(result)
