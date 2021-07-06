@@ -11,7 +11,7 @@ import functools
 import re
 from copy import copy
 
-IS_ST3 = sublime.version().startswith('3')
+IS_ST3 = sublime.version().startswith('3') or sublime.version().startswith('4')
 
 
 def get_settings():
