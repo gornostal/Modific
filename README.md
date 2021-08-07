@@ -1,3 +1,9 @@
+👉 **This plugin is no longer maintained.**
+
+The built-in git support in ST is pretty decent. You can still install this plugin, and if it doesn't work feel free to fork it and modify to your needs.
+
+-----
+
 Modific
 =========
 
